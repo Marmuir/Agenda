@@ -97,7 +97,7 @@
         .mission-info p { color: #86868b; font-size: 0.9rem; }
         .mission-reward { font-weight: 800; color: #34c759; font-size: 1.2rem; }
         
-        /* MODAL 100% ORIGINAL */
+        /* MODAL */
         #mission-modal {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
@@ -127,25 +127,17 @@
         .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         .data-box { background: #f2f2f7; padding: 15px; border-radius: 15px; }
         .data-box span { display: block; font-size: 0.8rem; color: #8e8e93; text-transform: uppercase; font-weight: 600; margin-bottom: 5px; }
-        .data-box strong { font-size: 1rem; color: #1d1d1f; }
+        .data-box strong { font-size: 1rem; color: #1d1d1f; display: block; }
         
         .action-btns { display: flex; flex-direction: column; gap: 10px; }
-        .btn-maps { background: #e5e5ea; color: #1d1d1f; padding: 15px; border-radius: 12px; text-align: center; text-decoration: none; font-weight: 600; transition: background 0.2s; }
+        .btn-maps { background: #e5e5ea; color: #1d1d1f; padding: 15px; border-radius: 12px; text-align: center; text-decoration: none; font-weight: 600; transition: background 0.2s; border: none; cursor: pointer; display: block; width: 100%; }
         .btn-maps:hover { background: #d1d1d6; }
         
         .btn-complete { background: #34c759; color: white; padding: 15px; border: none; border-radius: 12px; font-weight: 600; font-size: 1.1rem; cursor: pointer; box-shadow: 0 5px 15px rgba(52, 199, 89, 0.3); }
         .btn-complete:active { transform: scale(0.98); }
         .btn-start { background: #007aff; box-shadow: 0 5px 15px rgba(0, 122, 255, 0.3); }
 
-        /* DEBRIEFING INTEGRADO (Oculto por defecto) */
-        #debriefing-panel {
-            display: none;
-            background: #f2f2f7;
-            padding: 20px;
-            border-radius: 15px;
-            margin-top: 15px;
-            animation: fadeIn 0.3s ease;
-        }
+        #debriefing-panel { display: none; background: #f2f2f7; padding: 20px; border-radius: 15px; margin-top: 15px; animation: fadeIn 0.3s ease; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-weight: 600; margin-bottom: 8px; color: #1d1d1f; font-size: 0.9rem; }
         .ios-input, .ios-select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #d1d1d6; background: #fff; font-size: 1rem; outline: none; }
@@ -187,6 +179,7 @@
                 <div id="missions-view">
                     <button class="back-btn" onclick="hideMissions()">‹ Volver al Inicio</button>
                     <div id="missions-list"></div>
+                    <button class="btn-maps" style="margin-top: 15px;" onclick="forceReloadMissions()">🔄 Generar Nuevos Contratos</button>
                 </div>
             </div>
         </div>
@@ -203,7 +196,11 @@
                 <div class="data-grid">
                     <div class="data-box"><span>Pasajeros/Carga</span><strong id="modal-pax"></strong></div>
                     <div class="data-box"><span>Peso Estimado</span><strong id="modal-weight"></strong></div>
-                    <div class="data-box"><span>Coordenadas GPS</span><strong id="modal-coords"></strong></div>
+                    <div class="data-box">
+                        <span>Coordenadas / SkyVector</span>
+                        <strong id="modal-coords"></strong>
+                        <strong id="modal-skyvector" style="color:#007aff; font-size: 0.9rem; margin-top: 3px;"></strong>
+                    </div>
                     <div class="data-box"><span>Pago Estimado</span><strong id="modal-reward" style="color:#34c759;"></strong></div>
                 </div>
 
@@ -212,7 +209,6 @@
                     <button id="btn-iniciar" class="btn-complete btn-start" onclick="startFlight()">🚁 Iniciar Vuelo</button>
                 </div>
 
-                <!-- PANEL QUE APARECE AL INICIAR VUELO -->
                 <div id="debriefing-panel">
                     <div style="color: #007aff; font-weight: 800; margin-bottom: 15px;">VUELO EN CURSO</div>
                     <div class="form-group">
@@ -224,7 +220,7 @@
                         <select id="landing-quality" class="ios-select">
                             <option value="perfect">Perfecto (Como la seda)</option>
                             <option value="normal" selected>Normal</option>
-                            <option value="hard">Brusco (-200€ por revisión de patines)</option>
+                            <option value="hard">Brusco (-200€ por revisión)</option>
                         </select>
                     </div>
                     <button class="btn-complete" style="width: 100%; margin-top: 10px;" onclick="finishAndPay()">✓ Finalizar y Cobrar</button>
@@ -235,35 +231,30 @@
     </div>
 
     <script>
+        // Carga de estado desde LocalStorage
         let balance = localStorage.getItem("navarraHeliBalance") ? parseInt(localStorage.getItem("navarraHeliBalance")) : 0;
-        let currentMissions = [];
+        let currentMissions = localStorage.getItem("navarraHeliMissions") ? JSON.parse(localStorage.getItem("navarraHeliMissions")) : [];
+        let activeFlightIndex = localStorage.getItem("navarraHeliActiveFlight") ? parseInt(localStorage.getItem("navarraHeliActiveFlight")) : -1;
         let selectedMissionIndex = -1;
-        let activeFlightIndex = -1;
 
-        // Base de datos AMPLIADA
         const ubicacionesNavarra = [
-            { nombre: "Finca 'El Caserío'", lat: 42.9234, lon: -1.7421, tipo: "VIP" },
-            { nombre: "Palacio de Olite", lat: 42.4820, lon: -1.6508, tipo: "Boda" },
-            { nombre: "Hotel Muga de Beloso", lat: 42.8184, lon: -1.6265, tipo: "VIP" },
-            { nombre: "Bodega Arínzano", lat: 42.6394, lon: -2.0253, tipo: "VIP" },
-            { nombre: "Monasterio de Leyre", lat: 42.6366, lon: -1.1718, tipo: "Transporte" },
-            { nombre: "Bardenas Reales", lat: 42.2030, lon: -1.4721, tipo: "Cine" },
-            { nombre: "Selva de Irati", lat: 42.9972, lon: -1.0963, tipo: "Rescate" },
-            { nombre: "Embalse de Yesa", lat: 42.6175, lon: -1.1852, tipo: "Inspección" },
-            { nombre: "Foz de Lumbier", lat: 42.6333, lon: -1.3167, tipo: "Emergencia" },
-            { nombre: "Zugarramurdi", lat: 43.2667, lon: -1.5500, tipo: "VIP" },
-            { nombre: "Hospital Universitario (HUN)", lat: 42.8055, lon: -1.6565, tipo: "Emergencia" },
-            { nombre: "Aeródromo de Lumbier", lat: 42.6450, lon: -1.3050, tipo: "Transporte" },
-            { nombre: "Circuito de Los Arcos", lat: 42.5534, lon: -2.1643, tipo: "VIP" },
-            { nombre: "Refugio de Belagua", lat: 42.9461, lon: -0.8033, tipo: "Rescate" },
-            { nombre: "Cantera de Alaiz", lat: 42.7167, lon: -1.6000, tipo: "Inspección" }
+            { nombre: "Finca 'El Caserío'", lat: 42.9234, lon: -1.7421 },
+            { nombre: "Palacio de Olite", lat: 42.4820, lon: -1.6508 },
+            { nombre: "Hotel Muga de Beloso", lat: 42.8184, lon: -1.6265 },
+            { nombre: "Bodega Arínzano", lat: 42.6394, lon: -2.0253 },
+            { nombre: "Monasterio de Leyre", lat: 42.6366, lon: -1.1718 },
+            { nombre: "Bardenas Reales", lat: 42.2030, lon: -1.4721 },
+            { nombre: "Selva de Irati", lat: 42.9972, lon: -1.0963 },
+            { nombre: "Embalse de Yesa", lat: 42.6175, lon: -1.1852 },
+            { nombre: "Foz de Lumbier", lat: 42.6333, lon: -1.3167 },
+            { nombre: "Hospital Universitario (HUN)", lat: 42.8055, lon: -1.6565 },
+            { nombre: "Refugio de Belagua", lat: 42.9461, lon: -0.8033 }
         ];
 
         const pasajerosYCarga = [
             "Don Arturo Goñi", "Familia Zabaleta", "Ejecutivos Internacionales", 
-            "Material Audiovisual Pesado", "Equipo Médico", "Jeque Internacional", 
-            "Novios: Carlos y Marta", "Turistas Perdidos", "Ingenieros de Caminos",
-            "Suministros de Emergencia", "Políticos de Visita", "Piezas Industriales"
+            "Material Audiovisual", "Equipo Médico", "Jeque Internacional", 
+            "Novios: Carlos y Marta", "Turistas Perdidos", "Piezas Industriales"
         ];
 
         const historiasGenerales = [
@@ -272,8 +263,7 @@
             "Es el día de su boda y quieren hacer una entrada espectacular frente a los invitados.",
             "Equipo de rodaje audiovisual. Necesitan llegar a la localización antes del atardecer.",
             "Transporte de urgencia al punto designado. El tiempo apremia.",
-            "Vuelo de inspección técnica. Necesitan llegar a la zona, sobrevolarla unos minutos y aterrizar cerca.",
-            "Unos senderistas se han desorientado o lesionado levemente. Llévalos de vuelta o al punto de encuentro.",
+            "Unos senderistas se han desorientado levemente. Llévalos al punto de encuentro.",
             "Traslado de directivos para cerrar un acuerdo importante sobre el terreno."
         ];
 
@@ -283,6 +273,23 @@
             document.getElementById("balance-display").innerText = balance.toLocaleString("es-ES");
         }
         setGreeting();
+
+        function saveState() {
+            localStorage.setItem("navarraHeliBalance", balance);
+            localStorage.setItem("navarraHeliMissions", JSON.stringify(currentMissions));
+            localStorage.setItem("navarraHeliActiveFlight", activeFlightIndex);
+        }
+
+        function formatSkyVector(lat, lon) {
+            let latDeg = Math.floor(Math.abs(lat));
+            let latMin = Math.round((Math.abs(lat) - latDeg) * 60);
+            let lonDeg = Math.floor(Math.abs(lon));
+            let lonMin = Math.round((Math.abs(lon) - lonDeg) * 60);
+            
+            let latStr = latDeg.toString().padStart(2, '0') + latMin.toString().padStart(2, '0') + (lat >= 0 ? 'N' : 'S');
+            let lonStr = lonDeg.toString().padStart(3, '0') + lonMin.toString().padStart(2, '0') + (lon >= 0 ? 'E' : 'W');
+            return latStr + lonStr;
+        }
 
         function showMissions() {
             document.getElementById("main-menu").style.display = "none";
@@ -299,6 +306,15 @@
             document.querySelector(".back-btn").style.display = "none";
         }
 
+        function forceReloadMissions() {
+            if (activeFlightIndex !== -1) {
+                alert("Termina tu vuelo en curso antes de buscar nuevos contratos.");
+                return;
+            }
+            generateRandomMissions();
+            renderMissions();
+        }
+
         function generateRandomMissions() {
             currentMissions = [];
             for (let i = 0; i < 5; i++) {
@@ -306,9 +322,8 @@
                 let pax = pasajerosYCarga[Math.floor(Math.random() * pasajerosYCarga.length)];
                 let lore = historiasGenerales[Math.floor(Math.random() * historiasGenerales.length)];
                 
-                // Variar el peso y número
                 let num = Math.floor(Math.random() * 4) + 1;
-                let peso = num * 85 + Math.floor(Math.random() * 50); // kg
+                let peso = num * 85 + Math.floor(Math.random() * 50);
                 let recompensa = Math.floor(Math.random() * 1800) + 900;
                 
                 currentMissions.push({
@@ -317,6 +332,7 @@
                     estado: "disponible"
                 });
             }
+            saveState();
         }
 
         function renderMissions() {
@@ -348,10 +364,10 @@
             document.getElementById("modal-pax").innerText = `${m.paxName} (${m.paxNum})`;
             document.getElementById("modal-weight").innerText = `${m.peso} kg`;
             document.getElementById("modal-coords").innerText = `${m.lat.toFixed(4)}, ${m.lon.toFixed(4)}`;
+            document.getElementById("modal-skyvector").innerText = formatSkyVector(m.lat, m.lon);
             document.getElementById("modal-reward").innerText = `${m.recompensa.toLocaleString("es-ES")} €`;
             document.getElementById("modal-maps-btn").href = `https://www.google.com/maps/search/?api=1&query=${m.lat},${m.lon}`;
 
-            // Resetear visualmente el panel de botones y formularios al abrir
             const btnIniciar = document.getElementById("btn-iniciar");
             const panelDebriefing = document.getElementById("debriefing-panel");
             
@@ -374,15 +390,15 @@
 
         function startFlight() {
             if (activeFlightIndex !== -1 && activeFlightIndex !== selectedMissionIndex) {
-                alert("Ya tienes un vuelo en curso. Termínalo o cancélalo primero.");
+                alert("Ya tienes un vuelo en curso. Termínalo antes de empezar otro.");
                 return;
             }
             
             activeFlightIndex = selectedMissionIndex;
             currentMissions[selectedMissionIndex].estado = "en_curso";
+            saveState();
             renderMissions();
             
-            // Animación suave dentro del propio modal
             document.getElementById("btn-iniciar").style.display = "none";
             document.getElementById("debriefing-panel").style.display = "block";
         }
@@ -390,7 +406,7 @@
         function finishAndPay() {
             const timeInput = document.getElementById("flight-time").value;
             if(!timeInput || timeInput <= 0) {
-                alert("Por favor, introduce los minutos de vuelo para completar el reporte.");
+                alert("Por favor, introduce los minutos de vuelo.");
                 return;
             }
 
@@ -401,22 +417,22 @@
             let mensajeExtra = "";
             if (calidad === "hard") {
                 pagoFinal -= 200;
-                mensajeExtra = "\nSe han descontado 200€ por revisión tras un aterrizaje brusco.";
+                mensajeExtra = "\nSe descontaron 200€ por revisión tras el aterrizaje brusco.";
             } else if (calidad === "perfect") {
                 pagoFinal += 150;
-                mensajeExtra = "\n¡Bonus de 150€ añadido por un aterrizaje VIP impecable!";
+                mensajeExtra = "\n¡Bonus de 150€ por un aterrizaje impecable!";
             }
 
             balance += pagoFinal;
-            localStorage.setItem("navarraHeliBalance", balance);
             document.getElementById("balance-display").innerText = balance.toLocaleString("es-ES");
 
-            alert(`¡Contrato Completado con éxito!\nTiempo registrado: ${timeInput} minutos.\nPago neto recibido: ${pagoFinal} €${mensajeExtra}`);
+            alert(`¡Contrato Completado!\nTiempo: ${timeInput} minutos.\nPago recibido: ${pagoFinal} €${mensajeExtra}`);
 
             currentMissions.splice(selectedMissionIndex, 1);
             activeFlightIndex = -1;
             selectedMissionIndex = -1;
             
+            saveState();
             closeModal();
             renderMissions();
         }
