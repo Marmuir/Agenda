@@ -2,324 +2,424 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Mis Tareas</title>
-
-    <link rel="apple-touch-icon" href="icono.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Agenda">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navarra Heli-Missions</title>
     <style>
-        :root {
-            --bg-color: #F2F2F7;
-            --card-bg: #FFFFFF;
-            --text-color: #000000;
-            --accent-color: #007AFF;
-            --danger-color: #FF3B30;
-            --list-border: #C6C6C8;
-            --time-color: #8E8E93;
-        }
-
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg-color: #000000;
-                --card-bg: #1C1C1E;
-                --text-color: #FFFFFF;
-                --list-border: #38383A;
-                --time-color: #98989D;
-            }
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Bloqueamos el tamaño exacto a la pantalla visible del móvil */
-        html, body {
-            height: 100%;
-            height: 100dvh; /* Altura dinámica exacta para iOS */
-            overflow: hidden; /* Evita que la pantalla entera haga scroll */
+        body {
+            background: url('https://images.unsplash.com/photo-1541410965313-d53b3c16ef17?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
+            background-size: cover;
+            color: #1d1d1f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
         }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            padding-top: env(safe-area-inset-top);
+        .app-container {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 30px;
+            width: 100%;
+            max-width: 900px;
+            min-height: 80vh;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.4);
             display: flex;
             flex-direction: column;
-            -webkit-font-smoothing: antialiased;
         }
 
-        header {
-            padding: 24px 20px 12px 20px;
-            font-size: 34px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            flex-shrink: 0; /* Evita que el título se encoja */
+        header { margin-bottom: 30px; }
+        .greeting { font-size: 1.2rem; color: #515154; font-weight: 600; }
+        .title { font-size: 2.5rem; font-weight: 800; color: #000; letter-spacing: -1px; }
+
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            flex-grow: 1;
+        }
+        @media (min-width: 768px) {
+            .layout-grid { grid-template-columns: 1fr 2fr; }
         }
 
-        /* Solo esta sección podrá hacer scroll */
-        main {
-            flex: 1;
-            overflow-y: auto;
-            padding: 0 20px;
-        }
-
-        .task-list {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-
-        .task-item {
-            display: flex;
-            align-items: center;
-            padding: 16px;
-            border-bottom: 0.5px solid var(--list-border);
-            transition: opacity 0.2s;
-        }
-
-        .task-item:last-child {
-            border-bottom: none;
-        }
-
-        .task-checkbox {
-            appearance: none;
-            width: 24px;
-            height: 24px;
-            border: 2px solid var(--list-border);
-            border-radius: 50%;
-            margin-right: 16px;
-            outline: none;
-            cursor: pointer;
-            position: relative;
-            flex-shrink: 0;
-        }
-
-        .task-checkbox:checked {
-            background-color: var(--accent-color);
-            border-color: var(--accent-color);
-        }
-
-        .task-checkbox:checked::after {
-            content: '';
-            position: absolute;
-            top: 6px;
-            left: 6px;
-            width: 10px;
-            height: 5px;
-            border: 2px solid white;
-            border-top: none;
-            border-right: none;
-            transform: rotate(-45deg);
-        }
-
-        .task-content {
-            display: flex;
-            flex: 1;
-            align-items: center;
-            justify-content: space-between;
-            margin-right: 12px;
-            min-width: 0;
-        }
-
-        .task-text {
-            font-size: 17px;
-            transition: color 0.2s, text-decoration 0.2s;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .task-time {
-            font-size: 15px;
-            color: var(--time-color);
-            white-space: nowrap;
-            margin-left: 8px;
-        }
-
-        .task-item.completed .task-text,
-        .task-item.completed .task-time {
-            color: var(--time-color);
-            text-decoration: line-through;
-        }
-
-        .delete-btn {
-            background: none;
-            border: none;
-            color: var(--danger-color);
-            font-size: 15px;
-            cursor: pointer;
-            padding: 8px 0 8px 8px;
-        }
-
-        /* La barra de controles se mantiene fija al fondo de la pantalla visible */
-        .controls-wrapper {
-            flex-shrink: 0; /* Evita que la barra se deforme */
-            display: flex;
-            padding: 12px 20px calc(16px + env(safe-area-inset-bottom));
-            background-color: var(--bg-color);
-            border-top: 0.5px solid var(--list-border);
-            align-items: center;
-        }
-
-        .task-input {
-            flex: 1;
-            padding: 10px 16px;
-            border-radius: 20px;
-            border: 1px solid var(--list-border);
-            font-size: 17px;
-            background-color: var(--card-bg);
-            color: var(--text-color);
-            outline: none;
-        }
-
-        .task-input::placeholder {
-            color: gray;
-        }
-
-        .add-btn {
-            margin-left: 12px;
-            background-color: var(--accent-color);
+        .balance-card {
+            background: linear-gradient(135deg, #2c2c2e, #1c1c1e);
             color: white;
-            border: none;
             border-radius: 20px;
-            padding: 10px 20px;
-            font-size: 17px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: opacity 0.2s;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .balance-title { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; color: #a1a1a6; }
+        .balance-amount { font-size: 3.5rem; font-weight: 800; margin: 10px 0; color: #34c759; }
+        .balance-fleet { font-size: 0.9rem; background: rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 10px; display: inline-block; align-self: flex-start; }
+
+        .main-btn {
+            background: #007aff; color: white; border: none; border-radius: 18px; padding: 20px;
+            font-size: 1.2rem; font-weight: 600; width: 100%; cursor: pointer;
+            transition: transform 0.2s, background 0.2s; display: flex; justify-content: space-between;
+            align-items: center; box-shadow: 0 10px 20px rgba(0, 122, 255, 0.3); margin-bottom: 15px;
+        }
+        .main-btn:active { transform: scale(0.96); }
+        .main-btn:hover { background: #0066d6; }
+        .main-btn.btn-hangar { background: rgba(255,255,255,0.6); color: #1d1d1f; box-shadow: none; border: 1px solid rgba(0,0,0,0.05); }
+        .main-btn.btn-hangar:hover { background: rgba(255,255,255,0.9); }
+
+        #missions-view { display: none; flex-direction: column; gap: 15px; animation: fadeIn 0.4s ease; }
+        
+        .mission-banner {
+            background: rgba(255,255,255,0.8); border-radius: 15px; padding: 20px; cursor: pointer;
+            transition: all 0.2s ease; display: flex; justify-content: space-between; align-items: center;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .mission-banner.active-flight {
+            background: #e5f0ff; border-left: 5px solid #007aff;
+        }
+        .mission-banner:hover { background: #fff; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
+        .mission-info h3 { font-size: 1.1rem; margin-bottom: 5px; }
+        .mission-info p { color: #86868b; font-size: 0.9rem; }
+        .mission-reward { font-weight: 800; color: #34c759; font-size: 1.2rem; }
+        
+        /* MODAL 100% ORIGINAL */
+        #mission-modal {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+            display: flex; justify-content: center; align-items: flex-end;
+            visibility: hidden; opacity: 0; transition: opacity 0.3s ease, visibility 0.3s ease; z-index: 100;
+        }
+        #mission-modal.active { visibility: visible; opacity: 1; pointer-events: auto; }
+        #mission-modal:not(.active) { pointer-events: none; }
+        
+        .modal-content {
+            background: #fff; width: 100%; max-width: 600px; border-radius: 30px 30px 0 0;
+            padding: 30px; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.1, 0.8, 0.2, 1);
+            max-height: 90vh; overflow-y: auto;
+        }
+        #mission-modal.active .modal-content { transform: translateY(0); }
+        @media (min-width: 768px) {
+            #mission-modal { align-items: center; }
+            .modal-content { border-radius: 20px; transform: scale(0.9); }
+            #mission-modal.active .modal-content { transform: scale(1); }
         }
 
-        .add-btn:active {
-            opacity: 0.7;
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-title { font-size: 1.5rem; font-weight: 800; }
+        .close-btn { background: #f2f2f7; border: none; width: 30px; height: 30px; border-radius: 15px; font-weight: bold; cursor: pointer; color: #8e8e93; }
+        
+        .lore-box { background: #fff3d4; padding: 15px; border-radius: 15px; margin-bottom: 20px; border-left: 4px solid #ffcc00; font-size: 0.95rem; color: #5c4900; line-height: 1.5; }
+        .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .data-box { background: #f2f2f7; padding: 15px; border-radius: 15px; }
+        .data-box span { display: block; font-size: 0.8rem; color: #8e8e93; text-transform: uppercase; font-weight: 600; margin-bottom: 5px; }
+        .data-box strong { font-size: 1rem; color: #1d1d1f; }
+        
+        .action-btns { display: flex; flex-direction: column; gap: 10px; }
+        .btn-maps { background: #e5e5ea; color: #1d1d1f; padding: 15px; border-radius: 12px; text-align: center; text-decoration: none; font-weight: 600; transition: background 0.2s; }
+        .btn-maps:hover { background: #d1d1d6; }
+        
+        .btn-complete { background: #34c759; color: white; padding: 15px; border: none; border-radius: 12px; font-weight: 600; font-size: 1.1rem; cursor: pointer; box-shadow: 0 5px 15px rgba(52, 199, 89, 0.3); }
+        .btn-complete:active { transform: scale(0.98); }
+        .btn-start { background: #007aff; box-shadow: 0 5px 15px rgba(0, 122, 255, 0.3); }
+
+        /* DEBRIEFING INTEGRADO (Oculto por defecto) */
+        #debriefing-panel {
+            display: none;
+            background: #f2f2f7;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 15px;
+            animation: fadeIn 0.3s ease;
         }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 8px; color: #1d1d1f; font-size: 0.9rem; }
+        .ios-input, .ios-select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #d1d1d6; background: #fff; font-size: 1rem; outline: none; }
+
+        .back-btn { background: none; border: none; color: #007aff; font-size: 1rem; font-weight: 600; cursor: pointer; margin-bottom: 15px; display: none; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <header>Mis Tareas</header>
+    <div class="app-container">
+        <header>
+            <div class="greeting" id="greeting">Buenos días,</div>
+            <div class="title">Piloto Marcos</div>
+        </header>
 
-    <main>
-        <div class="task-list" id="taskList"></div>
-    </main>
+        <div class="layout-grid">
+            <div class="balance-card">
+                <div>
+                    <div class="balance-title">Fondo de la Compañía</div>
+                    <div class="balance-amount"><span id="balance-display">0</span> €</div>
+                </div>
+                <div class="balance-fleet">🚁 EC135 (Activo) - LEPP</div>
+            </div>
 
-    <div class="controls-wrapper">
-        <input type="text" id="taskInput" class="task-input" placeholder="Toca y usa el 🎤 del teclado" autocomplete="off">
-        <button class="add-btn" id="addBtn">Añadir</button>
+            <div class="menu-area">
+                <div id="main-menu">
+                    <button class="main-btn" onclick="showMissions()">
+                        <span>📋 Contratos Disponibles</span>
+                        <span>›</span>
+                    </button>
+                    <button class="main-btn btn-hangar" onclick="alert('Próximamente: Compra de aeronaves.')">
+                        <span>🔧 Hangar & Mejoras</span>
+                        <span>›</span>
+                    </button>
+                </div>
+
+                <div id="missions-view">
+                    <button class="back-btn" onclick="hideMissions()">‹ Volver al Inicio</button>
+                    <div id="missions-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="mission-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title" id="modal-title">Detalle de Misión</div>
+                    <button class="close-btn" onclick="closeModal()">✕</button>
+                </div>
+                
+                <div class="lore-box" id="modal-lore"></div>
+
+                <div class="data-grid">
+                    <div class="data-box"><span>Pasajeros/Carga</span><strong id="modal-pax"></strong></div>
+                    <div class="data-box"><span>Peso Estimado</span><strong id="modal-weight"></strong></div>
+                    <div class="data-box"><span>Coordenadas GPS</span><strong id="modal-coords"></strong></div>
+                    <div class="data-box"><span>Pago Estimado</span><strong id="modal-reward" style="color:#34c759;"></strong></div>
+                </div>
+
+                <div class="action-btns">
+                    <a href="#" target="_blank" id="modal-maps-btn" class="btn-maps">🗺️ Ver Destino en Google Maps</a>
+                    <button id="btn-iniciar" class="btn-complete btn-start" onclick="startFlight()">🚁 Iniciar Vuelo</button>
+                </div>
+
+                <!-- PANEL QUE APARECE AL INICIAR VUELO -->
+                <div id="debriefing-panel">
+                    <div style="color: #007aff; font-weight: 800; margin-bottom: 15px;">VUELO EN CURSO</div>
+                    <div class="form-group">
+                        <label>Tiempo bloque a bloque (Minutos)</label>
+                        <input type="number" id="flight-time" class="ios-input" placeholder="Ej: 45">
+                    </div>
+                    <div class="form-group">
+                        <label>Calidad del Aterrizaje</label>
+                        <select id="landing-quality" class="ios-select">
+                            <option value="perfect">Perfecto (Como la seda)</option>
+                            <option value="normal" selected>Normal</option>
+                            <option value="hard">Brusco (-200€ por revisión de patines)</option>
+                        </select>
+                    </div>
+                    <button class="btn-complete" style="width: 100%; margin-top: 10px;" onclick="finishAndPay()">✓ Finalizar y Cobrar</button>
+                </div>
+
+            </div>
+        </div>
     </div>
 
     <script>
-        const taskInput = document.getElementById('taskInput');
-        const addBtn = document.getElementById('addBtn');
-        const taskList = document.getElementById('taskList');
-        
-        let tasks = JSON.parse(localStorage.getItem('apple_tasks')) || [];
+        let balance = localStorage.getItem("navarraHeliBalance") ? parseInt(localStorage.getItem("navarraHeliBalance")) : 0;
+        let currentMissions = [];
+        let selectedMissionIndex = -1;
+        let activeFlightIndex = -1;
 
-        function saveTasks() {
-            localStorage.setItem('apple_tasks', JSON.stringify(tasks));
+        // Base de datos AMPLIADA
+        const ubicacionesNavarra = [
+            { nombre: "Finca 'El Caserío'", lat: 42.9234, lon: -1.7421, tipo: "VIP" },
+            { nombre: "Palacio de Olite", lat: 42.4820, lon: -1.6508, tipo: "Boda" },
+            { nombre: "Hotel Muga de Beloso", lat: 42.8184, lon: -1.6265, tipo: "VIP" },
+            { nombre: "Bodega Arínzano", lat: 42.6394, lon: -2.0253, tipo: "VIP" },
+            { nombre: "Monasterio de Leyre", lat: 42.6366, lon: -1.1718, tipo: "Transporte" },
+            { nombre: "Bardenas Reales", lat: 42.2030, lon: -1.4721, tipo: "Cine" },
+            { nombre: "Selva de Irati", lat: 42.9972, lon: -1.0963, tipo: "Rescate" },
+            { nombre: "Embalse de Yesa", lat: 42.6175, lon: -1.1852, tipo: "Inspección" },
+            { nombre: "Foz de Lumbier", lat: 42.6333, lon: -1.3167, tipo: "Emergencia" },
+            { nombre: "Zugarramurdi", lat: 43.2667, lon: -1.5500, tipo: "VIP" },
+            { nombre: "Hospital Universitario (HUN)", lat: 42.8055, lon: -1.6565, tipo: "Emergencia" },
+            { nombre: "Aeródromo de Lumbier", lat: 42.6450, lon: -1.3050, tipo: "Transporte" },
+            { nombre: "Circuito de Los Arcos", lat: 42.5534, lon: -2.1643, tipo: "VIP" },
+            { nombre: "Refugio de Belagua", lat: 42.9461, lon: -0.8033, tipo: "Rescate" },
+            { nombre: "Cantera de Alaiz", lat: 42.7167, lon: -1.6000, tipo: "Inspección" }
+        ];
+
+        const pasajerosYCarga = [
+            "Don Arturo Goñi", "Familia Zabaleta", "Ejecutivos Internacionales", 
+            "Material Audiovisual Pesado", "Equipo Médico", "Jeque Internacional", 
+            "Novios: Carlos y Marta", "Turistas Perdidos", "Ingenieros de Caminos",
+            "Suministros de Emergencia", "Políticos de Visita", "Piezas Industriales"
+        ];
+
+        const historiasGenerales = [
+            "El cliente exige la máxima discreción. Vuelo VIP a zona privada.",
+            "Llegan tarde a un evento crítico. Necesitan un traslado rápido y directo.",
+            "Es el día de su boda y quieren hacer una entrada espectacular frente a los invitados.",
+            "Equipo de rodaje audiovisual. Necesitan llegar a la localización antes del atardecer.",
+            "Transporte de urgencia al punto designado. El tiempo apremia.",
+            "Vuelo de inspección técnica. Necesitan llegar a la zona, sobrevolarla unos minutos y aterrizar cerca.",
+            "Unos senderistas se han desorientado o lesionado levemente. Llévalos de vuelta o al punto de encuentro.",
+            "Traslado de directivos para cerrar un acuerdo importante sobre el terreno."
+        ];
+
+        function setGreeting() {
+            const hour = new Date().getHours();
+            document.getElementById("greeting").innerText = hour < 13 ? "Buenos días," : hour < 20 ? "Buenas tardes," : "Buenas noches,";
+            document.getElementById("balance-display").innerText = balance.toLocaleString("es-ES");
+        }
+        setGreeting();
+
+        function showMissions() {
+            document.getElementById("main-menu").style.display = "none";
+            document.getElementById("missions-view").style.display = "flex";
+            document.querySelector(".back-btn").style.display = "block";
+            
+            if(currentMissions.length === 0) generateRandomMissions();
+            renderMissions();
         }
 
-        function renderTasks() {
-            taskList.innerHTML = '';
-            
-            if (tasks.length === 0) {
-                taskList.style.display = 'none';
-                return;
-            } else {
-                taskList.style.display = 'block';
-            }
+        function hideMissions() {
+            document.getElementById("missions-view").style.display = "none";
+            document.getElementById("main-menu").style.display = "block";
+            document.querySelector(".back-btn").style.display = "none";
+        }
 
-            tasks.forEach((task, index) => {
-                const div = document.createElement('div');
-                div.className = `task-item ${task.completed ? 'completed' : ''}`;
+        function generateRandomMissions() {
+            currentMissions = [];
+            for (let i = 0; i < 5; i++) {
+                let ubi = ubicacionesNavarra[Math.floor(Math.random() * ubicacionesNavarra.length)];
+                let pax = pasajerosYCarga[Math.floor(Math.random() * pasajerosYCarga.length)];
+                let lore = historiasGenerales[Math.floor(Math.random() * historiasGenerales.length)];
                 
-                const timeHtml = task.time ? `<span class="task-time">${task.time}</span>` : '';
+                // Variar el peso y número
+                let num = Math.floor(Math.random() * 4) + 1;
+                let peso = num * 85 + Math.floor(Math.random() * 50); // kg
+                let recompensa = Math.floor(Math.random() * 1800) + 900;
+                
+                currentMissions.push({
+                    id: i, origen: "Pamplona (LEPP)", destino: ubi.nombre, lat: ubi.lat, lon: ubi.lon,
+                    paxNum: num, paxName: pax, peso: peso, recompensa: recompensa, lore: lore,
+                    estado: "disponible"
+                });
+            }
+        }
 
-                div.innerHTML = `
-                    <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${index})">
-                    <div class="task-content">
-                        <span class="task-text">${task.text}</span>
-                        ${timeHtml}
+        function renderMissions() {
+            const list = document.getElementById("missions-list");
+            list.innerHTML = "";
+            
+            currentMissions.forEach((m, index) => {
+                const banner = document.createElement("div");
+                banner.className = `mission-banner ${m.estado === "en_curso" ? "active-flight" : ""}`;
+                banner.onclick = () => openModal(index);
+                
+                banner.innerHTML = `
+                    <div class="mission-info">
+                        <h3 style="color: ${m.estado === 'en_curso' ? '#007aff' : '#1d1d1f'}">${m.estado === "en_curso" ? "► EN CURSO: " : ""}Vuelo a ${m.destino.split(' ')[0]}</h3>
+                        <p>${m.origen} ➔ ${m.destino}</p>
                     </div>
-                    <button class="delete-btn" onclick="deleteTask(${index})">Borrar</button>
+                    <div class="mission-reward">${m.recompensa.toLocaleString("es-ES")} €</div>
                 `;
-                taskList.appendChild(div);
+                list.appendChild(banner);
             });
         }
 
-        window.toggleTask = function(index) {
-            tasks[index].completed = !tasks[index].completed;
-            saveTasks();
-            renderTasks();
-        }
-
-        window.deleteTask = function(index) {
-            tasks.splice(index, 1);
-            saveTasks();
-            renderTasks();
-        }
-
-        function processDictation(text) {
-            let rawTasks = text.split(/ y luego | y después | y despues | luego | después | despues | además | también | y |, |\.\s/gi);
+        function openModal(index) {
+            selectedMissionIndex = index;
+            const m = currentMissions[index];
             
-            rawTasks.forEach(t => {
-                let cleanTask = t.trim();
-                
-                if (cleanTask.toLowerCase().startsWith('a ')) cleanTask = cleanTask.substring(2).trim();
-                
-                if(cleanTask.length > 2) {
-                    
-                    const timeRegex = /(?:\s+durante\s+|\s+)?((?:media|una|un|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|\d+)\s*(?:hora|horas|minuto|minutos)(?:\s+y\s+(?:media|meia|cuarto))?)$/i;
-                    const match = cleanTask.match(timeRegex);
-                    
-                    let taskName = cleanTask;
-                    let taskTime = null;
+            document.getElementById("modal-title").innerText = `Contrato en ${m.destino.split(' ')[0]}`;
+            document.getElementById("modal-lore").innerText = m.lore;
+            document.getElementById("modal-pax").innerText = `${m.paxName} (${m.paxNum})`;
+            document.getElementById("modal-weight").innerText = `${m.peso} kg`;
+            document.getElementById("modal-coords").innerText = `${m.lat.toFixed(4)}, ${m.lon.toFixed(4)}`;
+            document.getElementById("modal-reward").innerText = `${m.recompensa.toLocaleString("es-ES")} €`;
+            document.getElementById("modal-maps-btn").href = `https://www.google.com/maps/search/?api=1&query=${m.lat},${m.lon}`;
 
-                    if (match) {
-                        taskName = cleanTask.replace(match[0], '').trim();
-                        taskTime = match[1].trim();
-                        if (taskTime.includes("meia")) {
-                            taskTime = taskTime.replace("meia", "media");
-                        }
-                    }
-
-                    taskName = taskName.charAt(0).toUpperCase() + taskName.slice(1);
-                    
-                    tasks.push({ text: taskName, time: taskTime, completed: false });
-                }
-            });
+            // Resetear visualmente el panel de botones y formularios al abrir
+            const btnIniciar = document.getElementById("btn-iniciar");
+            const panelDebriefing = document.getElementById("debriefing-panel");
             
-            saveTasks();
-            renderTasks();
-            
-            // Hacer scroll hacia abajo automáticamente al añadir tareas para ver las últimas
-            const mainEl = document.querySelector('main');
-            mainEl.scrollTop = mainEl.scrollHeight;
-        }
-
-        addBtn.addEventListener('click', () => {
-            const val = taskInput.value.trim();
-            if(val) {
-                processDictation(val);
-                taskInput.value = ''; 
+            if (m.estado === "en_curso") {
+                btnIniciar.style.display = "none";
+                panelDebriefing.style.display = "block";
+                document.getElementById("flight-time").value = "";
+                document.getElementById("landing-quality").value = "normal";
+            } else {
+                btnIniciar.style.display = "block";
+                panelDebriefing.style.display = "none";
             }
-        });
 
-        taskInput.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                addBtn.click();
+            document.getElementById("mission-modal").classList.add("active");
+        }
+
+        function closeModal() {
+            document.getElementById("mission-modal").classList.remove("active");
+        }
+
+        function startFlight() {
+            if (activeFlightIndex !== -1 && activeFlightIndex !== selectedMissionIndex) {
+                alert("Ya tienes un vuelo en curso. Termínalo o cancélalo primero.");
+                return;
             }
-        });
+            
+            activeFlightIndex = selectedMissionIndex;
+            currentMissions[selectedMissionIndex].estado = "en_curso";
+            renderMissions();
+            
+            // Animación suave dentro del propio modal
+            document.getElementById("btn-iniciar").style.display = "none";
+            document.getElementById("debriefing-panel").style.display = "block";
+        }
 
-        renderTasks();
+        function finishAndPay() {
+            const timeInput = document.getElementById("flight-time").value;
+            if(!timeInput || timeInput <= 0) {
+                alert("Por favor, introduce los minutos de vuelo para completar el reporte.");
+                return;
+            }
+
+            let m = currentMissions[selectedMissionIndex];
+            let pagoFinal = m.recompensa;
+            let calidad = document.getElementById("landing-quality").value;
+
+            let mensajeExtra = "";
+            if (calidad === "hard") {
+                pagoFinal -= 200;
+                mensajeExtra = "\nSe han descontado 200€ por revisión tras un aterrizaje brusco.";
+            } else if (calidad === "perfect") {
+                pagoFinal += 150;
+                mensajeExtra = "\n¡Bonus de 150€ añadido por un aterrizaje VIP impecable!";
+            }
+
+            balance += pagoFinal;
+            localStorage.setItem("navarraHeliBalance", balance);
+            document.getElementById("balance-display").innerText = balance.toLocaleString("es-ES");
+
+            alert(`¡Contrato Completado con éxito!\nTiempo registrado: ${timeInput} minutos.\nPago neto recibido: ${pagoFinal} €${mensajeExtra}`);
+
+            currentMissions.splice(selectedMissionIndex, 1);
+            activeFlightIndex = -1;
+            selectedMissionIndex = -1;
+            
+            closeModal();
+            renderMissions();
+        }
     </script>
 </body>
 </html>
