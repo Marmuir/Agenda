@@ -3,439 +3,352 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Navarra Heli-Missions</title>
+    <title>Repaso: Fisiología del Crecimiento y Desarrollo</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            -webkit-tap-highlight-color: transparent;
+        :root {
+            --primary-color: #2e7d32;
+            --primary-hover: #1b5e20;
+            --bg-color: #f4f6f5;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --border-color: #e0e0e0;
         }
 
         body {
-            background: url('https://images.unsplash.com/photo-1541410965313-d53b3c16ef17?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
-            background-size: cover;
-            color: #1d1d1f;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 20px;
         }
 
         .app-container {
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 30px;
+            background-color: var(--card-bg);
+            max-width: 600px;
             width: 100%;
-            max-width: 900px;
-            min-height: 80vh;
-            padding: 40px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.4);
-            display: flex;
-            flex-direction: column;
-        }
-
-        header { margin-bottom: 30px; }
-        .greeting { font-size: 1.2rem; color: #515154; font-weight: 600; }
-        .title { font-size: 2.5rem; font-weight: 800; color: #000; letter-spacing: -1px; }
-
-        .layout-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-            flex-grow: 1;
-        }
-        @media (min-width: 768px) {
-            .layout-grid { grid-template-columns: 1fr 2fr; }
-        }
-
-        .balance-card {
-            background: linear-gradient(135deg, #2c2c2e, #1c1c1e);
-            color: white;
-            border-radius: 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
             padding: 30px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-top: 0;
+            font-size: 1.5rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            background-color: var(--border-color);
+            border-radius: 8px;
+            height: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .stats {
             display: flex;
-            flex-direction: column;
             justify-content: space-between;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-        .balance-title { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; color: #a1a1a6; }
-        .balance-amount { font-size: 3.5rem; font-weight: 800; margin: 10px 0; color: #34c759; }
-        .balance-fleet { font-size: 0.9rem; background: rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 10px; display: inline-block; align-self: flex-start; }
-
-        .main-btn {
-            background: #007aff; color: white; border: none; border-radius: 18px; padding: 20px;
-            font-size: 1.2rem; font-weight: 600; width: 100%; cursor: pointer;
-            transition: transform 0.2s, background 0.2s; display: flex; justify-content: space-between;
-            align-items: center; box-shadow: 0 10px 20px rgba(0, 122, 255, 0.3); margin-bottom: 15px;
-        }
-        .main-btn:active { transform: scale(0.96); }
-        .main-btn:hover { background: #0066d6; }
-        .main-btn.btn-hangar { background: rgba(255,255,255,0.6); color: #1d1d1f; box-shadow: none; border: 1px solid rgba(0,0,0,0.05); }
-        .main-btn.btn-hangar:hover { background: rgba(255,255,255,0.9); }
-
-        #missions-view { display: none; flex-direction: column; gap: 15px; animation: fadeIn 0.4s ease; }
-        
-        .mission-banner {
-            background: rgba(255,255,255,0.8); border-radius: 15px; padding: 20px; cursor: pointer;
-            transition: all 0.2s ease; display: flex; justify-content: space-between; align-items: center;
-            border: 1px solid rgba(0,0,0,0.05);
-        }
-        .mission-banner.active-flight {
-            background: #e5f0ff; border-left: 5px solid #007aff;
-        }
-        .mission-banner:hover { background: #fff; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
-        .mission-info h3 { font-size: 1.1rem; margin-bottom: 5px; }
-        .mission-info p { color: #86868b; font-size: 0.9rem; }
-        .mission-reward { font-weight: 800; color: #34c759; font-size: 1.2rem; }
-        
-        /* MODAL */
-        #mission-modal {
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
-            display: flex; justify-content: center; align-items: flex-end;
-            visibility: hidden; opacity: 0; transition: opacity 0.3s ease, visibility 0.3s ease; z-index: 100;
-        }
-        #mission-modal.active { visibility: visible; opacity: 1; pointer-events: auto; }
-        #mission-modal:not(.active) { pointer-events: none; }
-        
-        .modal-content {
-            background: #fff; width: 100%; max-width: 600px; border-radius: 30px 30px 0 0;
-            padding: 30px; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.1, 0.8, 0.2, 1);
-            max-height: 90vh; overflow-y: auto;
-        }
-        #mission-modal.active .modal-content { transform: translateY(0); }
-        @media (min-width: 768px) {
-            #mission-modal { align-items: center; }
-            .modal-content { border-radius: 20px; transform: scale(0.9); }
-            #mission-modal.active .modal-content { transform: scale(1); }
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
         }
 
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .modal-title { font-size: 1.5rem; font-weight: 800; }
-        .close-btn { background: #f2f2f7; border: none; width: 30px; height: 30px; border-radius: 15px; font-weight: bold; cursor: pointer; color: #8e8e93; }
-        
-        .lore-box { background: #fff3d4; padding: 15px; border-radius: 15px; margin-bottom: 20px; border-left: 4px solid #ffcc00; font-size: 0.95rem; color: #5c4900; line-height: 1.5; }
-        .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .data-box { background: #f2f2f7; padding: 15px; border-radius: 15px; }
-        .data-box span { display: block; font-size: 0.8rem; color: #8e8e93; text-transform: uppercase; font-weight: 600; margin-bottom: 5px; }
-        .data-box strong { font-size: 1rem; color: #1d1d1f; display: block; }
-        
-        .action-btns { display: flex; flex-direction: column; gap: 10px; }
-        .btn-maps { background: #e5e5ea; color: #1d1d1f; padding: 15px; border-radius: 12px; text-align: center; text-decoration: none; font-weight: 600; transition: background 0.2s; border: none; cursor: pointer; display: block; width: 100%; }
-        .btn-maps:hover { background: #d1d1d6; }
-        
-        .btn-complete { background: #34c759; color: white; padding: 15px; border: none; border-radius: 12px; font-weight: 600; font-size: 1.1rem; cursor: pointer; box-shadow: 0 5px 15px rgba(52, 199, 89, 0.3); }
-        .btn-complete:active { transform: scale(0.98); }
-        .btn-start { background: #007aff; box-shadow: 0 5px 15px rgba(0, 122, 255, 0.3); }
+        .card {
+            background-color: #fefefe;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-        #debriefing-panel { display: none; background: #f2f2f7; padding: 20px; border-radius: 15px; margin-top: 15px; animation: fadeIn 0.3s ease; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-weight: 600; margin-bottom: 8px; color: #1d1d1f; font-size: 0.9rem; }
-        .ios-input, .ios-select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #d1d1d6; background: #fff; font-size: 1rem; outline: none; }
+        .word-title {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin: 10px 0;
+            font-weight: bold;
+        }
 
-        .back-btn { background: none; border: none; color: #007aff; font-size: 1rem; font-weight: 600; cursor: pointer; margin-bottom: 15px; display: none; }
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+        }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.2);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        button:disabled {
+            background-color: #9e9e9e;
+            cursor: not-allowed;
+        }
+
+        .feedback-area {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            background-color: #f0f7f0;
+            border-left: 4px solid var(--primary-color);
+            text-align: left;
+        }
+
+        .eval-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-correct {
+            background-color: #388e3c;
+        }
+        .btn-incorrect {
+            background-color: #d32f2f;
+        }
+        .btn-incorrect:hover {
+            background-color: #b71c1c;
+        }
+
+        .completed-state {
+            text-align: center;
+            display: none;
+        }
+
+        @media (max-width: 480px) {
+            .app-container {
+                padding: 20px;
+            }
+            .word-title {
+                font-size: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
-        <header>
-            <div class="greeting" id="greeting">Buenos días,</div>
-            <div class="title">Piloto Marcos</div>
-        </header>
-
-        <div class="layout-grid">
-            <div class="balance-card">
-                <div>
-                    <div class="balance-title">Fondo de la Compañía</div>
-                    <div class="balance-amount"><span id="balance-display">0</span> €</div>
-                </div>
-                <div class="balance-fleet">🚁 EC135 (Activo) - LEPP</div>
-            </div>
-
-            <div class="menu-area">
-                <div id="main-menu">
-                    <button class="main-btn" onclick="showMissions()">
-                        <span>📋 Contratos Disponibles</span>
-                        <span>›</span>
-                    </button>
-                    <button class="main-btn btn-hangar" onclick="alert('Próximamente: Compra de aeronaves.')">
-                        <span>🔧 Hangar & Mejoras</span>
-                        <span>›</span>
-                    </button>
-                </div>
-
-                <div id="missions-view">
-                    <button class="back-btn" onclick="hideMissions()">‹ Volver al Inicio</button>
-                    <div id="missions-list"></div>
-                    <button class="btn-maps" style="margin-top: 15px;" onclick="forceReloadMissions()">🔄 Generar Nuevos Contratos</button>
-                </div>
-            </div>
+    <div class="app-container" id="app-main">
+        <h1>Estudio de Fisiología Zootécnica</h1>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        
+        <div class="stats">
+            <span id="counter">Término: 1 / 20</span>
+            <span id="score">Aprendidas: 0</span>
         </div>
 
-        <div id="mission-modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <div class="modal-title" id="modal-title">Detalle de Misión</div>
-                    <button class="close-btn" onclick="closeModal()">✕</button>
-                </div>
-                
-                <div class="lore-box" id="modal-lore"></div>
+        <div class="card">
+            <div style="font-size: 0.9rem; color: var(--text-muted);">Define el siguiente concepto:</div>
+            <div class="word-title" id="current-word">Cargando...</div>
+        </div>
 
-                <div class="data-grid">
-                    <div class="data-box"><span>Pasajeros/Carga</span><strong id="modal-pax"></strong></div>
-                    <div class="data-box"><span>Peso Estimado</span><strong id="modal-weight"></strong></div>
-                    <div class="data-box">
-                        <span>Coordenadas / SkyVector</span>
-                        <strong id="modal-coords"></strong>
-                        <strong id="modal-skyvector" style="color:#007aff; font-size: 0.9rem; margin-top: 3px;"></strong>
-                    </div>
-                    <div class="data-box"><span>Pago Estimado</span><strong id="modal-reward" style="color:#34c759;"></strong></div>
-                </div>
+        <textarea id="user-input" placeholder="Escribe aquí tu definición o explicación..."></textarea>
+        
+        <button id="check-btn" onclick="revisarRespuesta()">Revisar Respuesta</button>
 
-                <div class="action-btns">
-                    <a href="#" target="_blank" id="modal-maps-btn" class="btn-maps">🗺️ Ver Destino en Google Maps</a>
-                    <button id="btn-iniciar" class="btn-complete btn-start" onclick="startFlight()">🚁 Iniciar Vuelo</button>
-                </div>
-
-                <div id="debriefing-panel">
-                    <div style="color: #007aff; font-weight: 800; margin-bottom: 15px;">VUELO EN CURSO</div>
-                    <div class="form-group">
-                        <label>Tiempo bloque a bloque (Minutos)</label>
-                        <input type="number" id="flight-time" class="ios-input" placeholder="Ej: 45">
-                    </div>
-                    <div class="form-group">
-                        <label>Calidad del Aterrizaje</label>
-                        <select id="landing-quality" class="ios-select">
-                            <option value="perfect">Perfecto (Como la seda)</option>
-                            <option value="normal" selected>Normal</option>
-                            <option value="hard">Brusco (-200€ por revisión)</option>
-                        </select>
-                    </div>
-                    <button class="btn-complete" style="width: 100%; margin-top: 10px;" onclick="finishAndPay()">✓ Finalizar y Cobrar</button>
-                </div>
-
+        <div class="feedback-area" id="feedback-area">
+            <p id="system-feedback" style="font-weight: bold; margin-top: 0;"></p>
+            <p><strong>Definición correcta:</strong></p>
+            <p id="correct-definition" style="color: #2e7d32;"></p>
+            <p style="font-size: 0.9rem; margin-top: 15px; color: var(--text-muted);">Sé honesto contigo mismo. ¿Tu explicación contenía la idea principal?</p>
+            <div class="eval-buttons">
+                <button class="btn-correct" onclick="marcarResultado(true)">Lo tenía bien</button>
+                <button class="btn-incorrect" onclick="marcarResultado(false)">Necesito repasarlo</button>
             </div>
         </div>
     </div>
 
+    <div class="app-container completed-state" id="app-completed">
+        <h1>¡Repaso Completado!</h1>
+        <p>Has repasado todos los términos pendientes.</p>
+        <button onclick="reiniciarEstudio()" style="margin-top: 20px;">Reiniciar todo el mazo</button>
+    </div>
+
     <script>
-        // Carga de estado desde LocalStorage
-        let balance = localStorage.getItem("navarraHeliBalance") ? parseInt(localStorage.getItem("navarraHeliBalance")) : 0;
-        let currentMissions = localStorage.getItem("navarraHeliMissions") ? JSON.parse(localStorage.getItem("navarraHeliMissions")) : [];
-        let activeFlightIndex = localStorage.getItem("navarraHeliActiveFlight") ? parseInt(localStorage.getItem("navarraHeliActiveFlight")) : -1;
-        let selectedMissionIndex = -1;
-
-        const ubicacionesNavarra = [
-            { nombre: "Finca 'El Caserío'", lat: 42.9234, lon: -1.7421 },
-            { nombre: "Palacio de Olite", lat: 42.4820, lon: -1.6508 },
-            { nombre: "Hotel Muga de Beloso", lat: 42.8184, lon: -1.6265 },
-            { nombre: "Bodega Arínzano", lat: 42.6394, lon: -2.0253 },
-            { nombre: "Monasterio de Leyre", lat: 42.6366, lon: -1.1718 },
-            { nombre: "Bardenas Reales", lat: 42.2030, lon: -1.4721 },
-            { nombre: "Selva de Irati", lat: 42.9972, lon: -1.0963 },
-            { nombre: "Embalse de Yesa", lat: 42.6175, lon: -1.1852 },
-            { nombre: "Foz de Lumbier", lat: 42.6333, lon: -1.3167 },
-            { nombre: "Hospital Universitario (HUN)", lat: 42.8055, lon: -1.6565 },
-            { nombre: "Refugio de Belagua", lat: 42.9461, lon: -0.8033 }
+        const baseDiccionario = [
+            { term: "Hiperplasia", def: "Multiplicación o división celular que incrementa el número total de células en un tejido. Predomina en la etapa embrionaria y fetal temprana.", kw: ["multiplicación", "división", "número"] },
+            { term: "Hipertrofia", def: "Incremento en el tamaño o volumen individual de las células preexistentes por acumulación citoplasmática y proteica.", kw: ["tamaño", "volumen", "preexistentes"] },
+            { term: "Morfogénesis", def: "Formación, ensamblaje y modelado funcional de los órganos y sistemas integrados del cuerpo.", kw: ["formación", "modelado", "órganos", "sistemas"] },
+            { term: "Alometría", def: "Fenómeno por el cual distintas partes corporales, órganos y tejidos no crecen al mismo ritmo ni de forma sincrónica (crecimiento relativo).", kw: ["ritmo", "sincrónica", "relativo", "distintas"] },
+            { term: "Somatotropina (GH)", def: "Hormona secretada por la adenohipófisis con patrón pulsátil; estimula el crecimiento longitudinal óseo y la síntesis de proteínas musculares.", kw: ["hormona", "adenohipófisis", "hueso", "músculo", "crecimiento"] },
+            { term: "Somatocrinina (GHRH)", def: "Hormona liberadora hipotalámica que estimula directamente la síntesis y liberación de la Hormona de Crecimiento (GH).", kw: ["estimula", "liberadora", "hipotálamo"] },
+            { term: "Somatostatina (SS/GHIH)", def: "Péptido neuroendocrino hipotalámico que inhibe de forma potente la liberación de GH.", kw: ["inhibe", "péptido", "hipotalámico"] },
+            { term: "Grelina", def: "Hormona peptídica secretada por la mucosa gástrica que estimula el apetito y la secreción de somatotropina.", kw: ["gástrica", "apetito", "estómago"] },
+            { term: "IGF-1 (Somatomedina C)", def: "Factor de crecimiento insulínico tipo 1. Sintetizado en el hígado, media la aceleración de la osificación estimulada por la GH.", kw: ["hígado", "osificación", "factor", "insulínico"] },
+            { term: "Vasopresina (ADH)", def: "Hormona antidiurética liberada por la neurohipófisis, responsable de la retención de agua en el túbulo colector renal y mantenimiento de la volemia.", kw: ["antidiurética", "agua", "renal", "volemia"] },
+            { term: "Colecistoquinina (CCK)", def: "Hormona intestinal liberada por la distensión estomacal que estimula la secreción biliar/pancreática y actúa como señal de saciedad.", kw: ["saciedad", "biliar", "distensión"] },
+            { term: "Leptina", def: "Hormona liberada por los adipocitos que actúa en el hipotálamo como señal de plenitud energética inhibiendo la ingesta.", kw: ["adipocitos", "grasa", "plenitud", "inhibiendo"] },
+            { term: "Blastocisto", def: "Estadio embrionario inicial compuesto por la masa celular interna (dará origen al embrión) y el trofoblasto.", kw: ["embrionario", "masa", "celular"] },
+            { term: "Trofoblasto", def: "Capa externa del blastocisto que dará origen a los anexos embrionarios: placenta, alantoides y corion.", kw: ["placenta", "corion", "alantoides", "externa"] },
+            { term: "Onda Basípeta", def: "Segunda onda morfogenética de crecimiento que progresa en sentido disto-proximal, desde las extremidades hacia el tronco.", kw: ["extremidades", "tronco", "disto", "proximal"] },
+            { term: "Crecimiento Compensatorio", def: "Capacidad de un animal de recuperar el retraso ponderal sufrido tras una restricción nutritiva, alcanzando tasas de ganancia de peso superiores a lo normal.", kw: ["recuperar", "restricción", "ganancia", "superiores"] },
+            { term: "Curvas de Hammond", def: "Modelo que describe la jerarquía y el orden cronológico de desarrollo de los tejidos: 1º Nervioso, 2º Óseo, 3º Muscular, 4º Adiposo.", kw: ["jerarquía", "orden", "nervioso", "óseo", "muscular", "adiposo"] },
+            { term: "Precocidad", def: "Capacidad de un animal para completar rápidamente su desarrollo fisiológico, depositando grasa y llegando al peso adulto a edades tempranas.", kw: ["rápidamente", "tempranas", "grasa", "adulto"] },
+            { term: "Grasa Intramuscular (Veteado)", def: "Última grasa en depositarse, localizada dentro de los fascículos musculares. Determina la calidad, jugosidad y palatabilidad de la carne.", kw: ["última", "fascículos", "calidad", "jugosidad"] },
+            { term: "Índice de Conversión (IC)", def: "Parámetro que mide la eficiencia nutritiva; indica la cantidad de alimento necesaria para ganar 1 kg de peso vivo.", kw: ["eficiencia", "alimento", "peso"] }
         ];
 
-        const pasajerosYCarga = [
-            "Don Arturo Goñi", "Familia Zabaleta", "Ejecutivos Internacionales", 
-            "Material Audiovisual", "Equipo Médico", "Jeque Internacional", 
-            "Novios: Carlos y Marta", "Turistas Perdidos", "Piezas Industriales"
-        ];
+        let mazo = [];
+        let indexActual = 0;
+        let aprendidasCount = 0;
 
-        const historiasGenerales = [
-            "El cliente exige la máxima discreción. Vuelo VIP a zona privada.",
-            "Llegan tarde a un evento crítico. Necesitan un traslado rápido y directo.",
-            "Es el día de su boda y quieren hacer una entrada espectacular frente a los invitados.",
-            "Equipo de rodaje audiovisual. Necesitan llegar a la localización antes del atardecer.",
-            "Transporte de urgencia al punto designado. El tiempo apremia.",
-            "Unos senderistas se han desorientado levemente. Llévalos al punto de encuentro.",
-            "Traslado de directivos para cerrar un acuerdo importante sobre el terreno."
-        ];
-
-        function setGreeting() {
-            const hour = new Date().getHours();
-            document.getElementById("greeting").innerText = hour < 13 ? "Buenos días," : hour < 20 ? "Buenas tardes," : "Buenas noches,";
-            document.getElementById("balance-display").innerText = balance.toLocaleString("es-ES");
-        }
-        setGreeting();
-
-        function saveState() {
-            localStorage.setItem("navarraHeliBalance", balance);
-            localStorage.setItem("navarraHeliMissions", JSON.stringify(currentMissions));
-            localStorage.setItem("navarraHeliActiveFlight", activeFlightIndex);
-        }
-
-        function formatSkyVector(lat, lon) {
-            let latDeg = Math.floor(Math.abs(lat));
-            let latMin = Math.round((Math.abs(lat) - latDeg) * 60);
-            let lonDeg = Math.floor(Math.abs(lon));
-            let lonMin = Math.round((Math.abs(lon) - lonDeg) * 60);
-            
-            let latStr = latDeg.toString().padStart(2, '0') + latMin.toString().padStart(2, '0') + (lat >= 0 ? 'N' : 'S');
-            let lonStr = lonDeg.toString().padStart(3, '0') + lonMin.toString().padStart(2, '0') + (lon >= 0 ? 'E' : 'W');
-            return latStr + lonStr;
-        }
-
-        function showMissions() {
-            document.getElementById("main-menu").style.display = "none";
-            document.getElementById("missions-view").style.display = "flex";
-            document.querySelector(".back-btn").style.display = "block";
-            
-            if(currentMissions.length === 0) generateRandomMissions();
-            renderMissions();
-        }
-
-        function hideMissions() {
-            document.getElementById("missions-view").style.display = "none";
-            document.getElementById("main-menu").style.display = "block";
-            document.querySelector(".back-btn").style.display = "none";
-        }
-
-        function forceReloadMissions() {
-            if (activeFlightIndex !== -1) {
-                alert("Termina tu vuelo en curso antes de buscar nuevos contratos.");
-                return;
-            }
-            generateRandomMissions();
-            renderMissions();
-        }
-
-        function generateRandomMissions() {
-            currentMissions = [];
-            for (let i = 0; i < 5; i++) {
-                let ubi = ubicacionesNavarra[Math.floor(Math.random() * ubicacionesNavarra.length)];
-                let pax = pasajerosYCarga[Math.floor(Math.random() * pasajerosYCarga.length)];
-                let lore = historiasGenerales[Math.floor(Math.random() * historiasGenerales.length)];
-                
-                let num = Math.floor(Math.random() * 4) + 1;
-                let peso = num * 85 + Math.floor(Math.random() * 50);
-                let recompensa = Math.floor(Math.random() * 1800) + 900;
-                
-                currentMissions.push({
-                    id: i, origen: "Pamplona (LEPP)", destino: ubi.nombre, lat: ubi.lat, lon: ubi.lon,
-                    paxNum: num, paxName: pax, peso: peso, recompensa: recompensa, lore: lore,
-                    estado: "disponible"
-                });
-            }
-            saveState();
-        }
-
-        function renderMissions() {
-            const list = document.getElementById("missions-list");
-            list.innerHTML = "";
-            
-            currentMissions.forEach((m, index) => {
-                const banner = document.createElement("div");
-                banner.className = `mission-banner ${m.estado === "en_curso" ? "active-flight" : ""}`;
-                banner.onclick = () => openModal(index);
-                
-                banner.innerHTML = `
-                    <div class="mission-info">
-                        <h3 style="color: ${m.estado === 'en_curso' ? '#007aff' : '#1d1d1f'}">${m.estado === "en_curso" ? "► EN CURSO: " : ""}Vuelo a ${m.destino.split(' ')[0]}</h3>
-                        <p>${m.origen} ➔ ${m.destino}</p>
-                    </div>
-                    <div class="mission-reward">${m.recompensa.toLocaleString("es-ES")} €</div>
-                `;
-                list.appendChild(banner);
-            });
-        }
-
-        function openModal(index) {
-            selectedMissionIndex = index;
-            const m = currentMissions[index];
-            
-            document.getElementById("modal-title").innerText = `Contrato en ${m.destino.split(' ')[0]}`;
-            document.getElementById("modal-lore").innerText = m.lore;
-            document.getElementById("modal-pax").innerText = `${m.paxName} (${m.paxNum})`;
-            document.getElementById("modal-weight").innerText = `${m.peso} kg`;
-            document.getElementById("modal-coords").innerText = `${m.lat.toFixed(4)}, ${m.lon.toFixed(4)}`;
-            document.getElementById("modal-skyvector").innerText = formatSkyVector(m.lat, m.lon);
-            document.getElementById("modal-reward").innerText = `${m.recompensa.toLocaleString("es-ES")} €`;
-            document.getElementById("modal-maps-btn").href = `https://www.google.com/maps/search/?api=1&query=${m.lat},${m.lon}`;
-
-            const btnIniciar = document.getElementById("btn-iniciar");
-            const panelDebriefing = document.getElementById("debriefing-panel");
-            
-            if (m.estado === "en_curso") {
-                btnIniciar.style.display = "none";
-                panelDebriefing.style.display = "block";
-                document.getElementById("flight-time").value = "";
-                document.getElementById("landing-quality").value = "normal";
+        function inicializar() {
+            // Intentar cargar progreso usando LocalStorage para guardar las sesiones
+            const guardado = localStorage.getItem('fisioZootecniaMazo');
+            if (guardado) {
+                mazo = JSON.parse(guardado);
             } else {
-                btnIniciar.style.display = "block";
-                panelDebriefing.style.display = "none";
+                // Mezclar array original
+                mazo = baseDiccionario.map(item => ({ ...item, aprendida: false }));
+                mazo.sort(() => Math.random() - 0.5);
+                guardarProgreso();
             }
 
-            document.getElementById("mission-modal").classList.add("active");
-        }
-
-        function closeModal() {
-            document.getElementById("mission-modal").classList.remove("active");
-        }
-
-        function startFlight() {
-            if (activeFlightIndex !== -1 && activeFlightIndex !== selectedMissionIndex) {
-                alert("Ya tienes un vuelo en curso. Termínalo antes de empezar otro.");
-                return;
-            }
-            
-            activeFlightIndex = selectedMissionIndex;
-            currentMissions[selectedMissionIndex].estado = "en_curso";
-            saveState();
-            renderMissions();
-            
-            document.getElementById("btn-iniciar").style.display = "none";
-            document.getElementById("debriefing-panel").style.display = "block";
-        }
-
-        function finishAndPay() {
-            const timeInput = document.getElementById("flight-time").value;
-            if(!timeInput || timeInput <= 0) {
-                alert("Por favor, introduce los minutos de vuelo.");
+            // Filtrar solo las no aprendidas para esta sesión
+            if (mazo.every(item => item.aprendida)) {
+                mostrarPantallaFinal();
                 return;
             }
 
-            let m = currentMissions[selectedMissionIndex];
-            let pagoFinal = m.recompensa;
-            let calidad = document.getElementById("landing-quality").value;
+            // Mover las no aprendidas al principio
+            mazo.sort((a, b) => (a.aprendida === b.aprendida)? 0 : a.aprendida? 1 : -1);
+            indexActual = 0;
+            actualizarUI();
+        }
 
-            let mensajeExtra = "";
-            if (calidad === "hard") {
-                pagoFinal -= 200;
-                mensajeExtra = "\nSe descontaron 200€ por revisión tras el aterrizaje brusco.";
-            } else if (calidad === "perfect") {
-                pagoFinal += 150;
-                mensajeExtra = "\n¡Bonus de 150€ por un aterrizaje impecable!";
+        function guardarProgreso() {
+            localStorage.setItem('fisioZootecniaMazo', JSON.stringify(mazo));
+        }
+
+        function actualizarUI() {
+            const noAprendidas = mazo.filter(i => !i.aprendida).length;
+            aprendidasCount = mazo.filter(i => i.aprendida).length;
+
+            if (noAprendidas === 0) {
+                mostrarPantallaFinal();
+                return;
             }
 
-            balance += pagoFinal;
-            document.getElementById("balance-display").innerText = balance.toLocaleString("es-ES");
-
-            alert(`¡Contrato Completado!\nTiempo: ${timeInput} minutos.\nPago recibido: ${pagoFinal} €${mensajeExtra}`);
-
-            currentMissions.splice(selectedMissionIndex, 1);
-            activeFlightIndex = -1;
-            selectedMissionIndex = -1;
+            document.getElementById('counter').innerText = `Pendientes: ${noAprendidas}`;
+            document.getElementById('score').innerText = `Aprendidas: ${aprendidasCount} / ${baseDiccionario.length}`;
             
-            saveState();
-            closeModal();
-            renderMissions();
+            const porcentaje = (aprendidasCount / baseDiccionario.length) * 100;
+            document.getElementById('progress-fill').style.width = `${porcentaje}%`;
+
+            document.getElementById('current-word').innerText = mazo[indexActual].term;
+            document.getElementById('user-input').value = "";
+            document.getElementById('feedback-area').style.display = 'none';
+            document.getElementById('check-btn').style.display = 'block';
         }
+
+        function revisarRespuesta() {
+            const input = document.getElementById('user-input').value.trim().toLowerCase();
+            if (input === "") {
+                alert("Por favor, escribe algo antes de revisar.");
+                return;
+            }
+
+            const itemActual = mazo[indexActual];
+            let hits = 0;
+            itemActual.kw.forEach(keyword => {
+                if (input.includes(keyword)) hits++;
+            });
+
+            const pFeedback = document.getElementById('system-feedback');
+            // Verificación inteligente y flexible
+            if (hits >= Math.min(2, itemActual.kw.length)) {
+                pFeedback.innerHTML = "¡Parece que captaste la idea principal! <span style='font-size:1.2rem'>🎯</span>";
+                pFeedback.style.color = "#388e3c";
+            } else {
+                pFeedback.innerHTML = "Faltan algunas palabras o conceptos clave. <span style='font-size:1.2rem'>👀</span>";
+                pFeedback.style.color = "#d32f2f";
+            }
+
+            document.getElementById('correct-definition').innerText = itemActual.def;
+            
+            document.getElementById('check-btn').style.display = 'none';
+            document.getElementById('feedback-area').style.display = 'block';
+        }
+
+        function marcarResultado(loSabia) {
+            if (loSabia) {
+                mazo[indexActual].aprendida = true;
+            } else {
+                // Si no lo sabía, lo mandamos al final del mazo para repasarlo luego
+                const item = mazo.splice(indexActual, 1)[0];
+                mazo.push(item);
+                indexActual--; // Ajustamos el índice porque el array se contrajo
+            }
+            
+            guardarProgreso();
+            indexActual++;
+            
+            // Si nos pasamos del número de no aprendidas, volvemos a empezar la ronda
+            const noAprendidas = mazo.filter(i => !i.aprendida).length;
+            if (indexActual >= noAprendidas) {
+                indexActual = 0;
+            }
+
+            actualizarUI();
+        }
+
+        function mostrarPantallaFinal() {
+            document.getElementById('app-main').style.display = 'none';
+            document.getElementById('app-completed').style.display = 'block';
+        }
+
+        function reiniciarEstudio() {
+            localStorage.removeItem('fisioZootecniaMazo');
+            document.getElementById('app-completed').style.display = 'none';
+            document.getElementById('app-main').style.display = 'block';
+            inicializar();
+        }
+
+        // Iniciar
+        inicializar();
     </script>
 </body>
 </html>
