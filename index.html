@@ -2,24 +2,40 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App de Estudio General</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- Configuración para App Nativa (Pantalla completa sin barra) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#f0f4f8">
+    
+    <title>StudyApp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --primary-color: #2e7d32;
-            --primary-hover: #1b5e20;
-            --blue-color: #1976d2;
-            --blue-hover: #1565c0;
-            --bg-color: #f4f6f5;
-            --card-bg: #ffffff;
-            --text-main: #333333;
-            --text-muted: #666666;
-            --border-color: #e0e0e0;
+            --bg-gradient: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --secondary: #10b981;
+            --secondary-hover: #059669;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --border: rgba(148, 163, 184, 0.2);
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius-lg: 20px;
+            --radius-md: 12px;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
             color: var(--text-main);
             margin: 0;
             padding: 20px;
@@ -27,238 +43,270 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .app-container {
-            background-color: var(--card-bg);
-            max-width: 600px;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            max-width: 500px;
             width: 100%;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-            padding: 30px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 35px 25px;
             box-sizing: border-box;
             position: relative;
+            overflow: hidden;
         }
 
         h1 {
-            color: var(--primary-color);
             text-align: center;
             margin-top: 0;
-            font-size: 1.5rem;
+            font-size: 1.75rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--text-main);
+            margin-bottom: 30px;
         }
         
-        .title-blue {
-            color: var(--blue-color);
+        .title-gradient {
+            background: linear-gradient(to right, var(--primary), #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .view {
             display: none;
-            animation: fadeIn 0.3s;
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .view.active { display: block; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .view.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
+        /* Botones del menú principal */
         .menu-btn {
             display: flex;
             align-items: center;
-            justify-content: center;
-            background-color: white;
+            background: white;
             color: var(--text-main);
-            border: 2px solid var(--border-color);
-            padding: 15px 20px;
+            border: 1px solid var(--border);
+            padding: 18px 20px;
             font-size: 1.1rem;
-            border-radius: 8px;
+            border-radius: var(--radius-md);
             cursor: pointer;
             width: 100%;
-            font-weight: bold;
+            font-weight: 600;
             margin-bottom: 15px;
-            transition: all 0.2s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
         }
 
+        .menu-btn:active { transform: scale(0.98); }
         .menu-btn:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
+            border-color: var(--primary);
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.1);
             transform: translateY(-2px);
         }
-        
-        .menu-btn.blue-btn:hover {
-            border-color: var(--blue-color);
-            color: var(--blue-color);
+
+        .menu-btn .icon-box {
+            background: var(--bg-gradient);
+            border-radius: 10px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.3rem;
         }
 
-        .icon {
-            font-size: 1.5rem;
-            margin-right: 10px;
-        }
-
+        /* Botón atrás */
         .back-btn {
             background: none;
             border: none;
             color: var(--text-muted);
-            font-size: 1rem;
+            font-size: 0.95rem;
+            font-weight: 600;
             cursor: pointer;
-            padding: 0;
+            padding: 8px 0;
             margin-bottom: 20px;
-            display: flex;
+            display: inline-flex;
             align-items: center;
+            transition: color 0.2s;
         }
+        .back-btn:hover { color: var(--primary); }
+        .back-btn svg { width: 18px; height: 18px; margin-right: 6px; }
 
-        .back-btn:hover {
-            color: var(--text-main);
+        /* Comunes Fisiología y Mates */
+        .action-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px 20px;
+            font-size: 1.05rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
         }
+        .action-btn:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        .action-btn:active { transform: scale(0.98); }
+        .action-btn.green { background: var(--secondary); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); }
+        .action-btn.green:hover { background: var(--secondary-hover); }
 
-        /* Fisiologia Styles */
+        /* Fisiología */
         .progress-bar {
             width: 100%;
-            background-color: var(--border-color);
-            border-radius: 8px;
-            height: 10px;
-            margin-bottom: 20px;
+            background-color: rgba(0,0,0,0.05);
+            border-radius: 10px;
+            height: 8px;
+            margin-bottom: 15px;
             overflow: hidden;
         }
-
         .progress-fill {
             height: 100%;
-            background-color: var(--primary-color);
+            background-color: var(--secondary);
             width: 0%;
-            transition: width 0.3s ease;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 10px;
         }
-
         .stats {
             display: flex;
             justify-content: space-between;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            font-weight: 600;
             color: var(--text-muted);
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
-        .card {
-            background-color: #fefefe;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            padding: 20px;
+        .flashcard {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 25px;
             text-align: center;
             margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
         }
-
         .word-title {
-            font-size: 1.8rem;
-            color: var(--primary-color);
-            margin: 10px 0;
-            font-weight: bold;
+            font-size: 1.6rem;
+            color: var(--text-main);
+            margin: 10px 0 0 0;
+            font-weight: 800;
         }
 
         textarea {
             width: 100%;
-            height: 100px;
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
+            height: 110px;
+            padding: 15px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
             font-size: 1rem;
             font-family: inherit;
-            resize: vertical;
+            resize: none;
             box-sizing: border-box;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            background: rgba(255,255,255,0.9);
+            transition: all 0.2s;
         }
-
         textarea:focus {
             outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.2);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
         }
-
-        .action-btn {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            font-size: 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            width: 100%;
-            font-weight: bold;
-            transition: background-color 0.2s;
-        }
-
-        .action-btn:hover { background-color: var(--primary-hover); }
-        .action-btn.blue { background-color: var(--blue-color); }
-        .action-btn.blue:hover { background-color: var(--blue-hover); }
 
         .feedback-area {
             display: none;
             margin-top: 20px;
-            padding: 15px;
-            border-radius: 6px;
-            background-color: #f0f7f0;
-            border-left: 4px solid var(--primary-color);
+            animation: slideUp 0.3s;
+        }
+        .feedback-box {
+            padding: 20px;
+            border-radius: var(--radius-md);
+            background: #f8fafc;
+            border: 1px solid var(--border);
             text-align: left;
+            margin-bottom: 15px;
         }
 
-        .eval-buttons { display: flex; gap: 10px; margin-top: 15px; }
-        .btn-correct { background-color: #388e3c; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; flex: 1; }
-        .btn-incorrect { background-color: #d32f2f; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; flex: 1; }
+        .eval-buttons { display: flex; gap: 12px; }
+        .btn-correct, .btn-incorrect {
+            border: none;
+            padding: 14px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            flex: 1;
+            font-weight: 600;
+            color: white;
+            font-size: 0.95rem;
+            transition: opacity 0.2s;
+        }
+        .btn-correct { background-color: var(--secondary); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); }
+        .btn-incorrect { background-color: var(--danger); box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2); }
+        .btn-correct:active, .btn-incorrect:active { transform: scale(0.96); }
 
-        /* Math Styles */
+        /* Matemáticas */
         .math-problem {
-            font-size: 3.5rem;
-            font-weight: bold;
+            font-size: 4rem;
+            font-weight: 800;
             text-align: center;
-            margin: 20px 0;
-            color: var(--blue-color);
-            letter-spacing: 2px;
+            margin: 30px 0;
+            color: var(--text-main);
+            letter-spacing: -2px;
         }
-
         .math-input {
             width: 100%;
-            font-size: 2rem;
+            font-size: 2.5rem;
+            font-weight: 700;
             text-align: center;
             padding: 15px;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
             box-sizing: border-box;
-            margin-bottom: 15px;
-            /* Ocultar flechas del input number en webkit */
+            margin-bottom: 20px;
+            color: var(--primary);
+            background: white;
+            transition: all 0.2s;
             -moz-appearance: textfield;
         }
-        
         .math-input::-webkit-outer-spin-button,
-        .math-input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        .math-input:focus {
-            outline: none;
-            border-color: var(--blue-color);
-            box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
-        }
-
+        .math-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .math-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+        
         .math-feedback {
             text-align: center;
-            font-size: 1.2rem;
-            font-weight: bold;
-            min-height: 30px;
-            margin-top: 10px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            height: 24px;
+            margin-top: 15px;
+            transition: all 0.2s;
+        }
+        .math-stats {
+            display: inline-block;
+            background: rgba(79, 70, 229, 0.1);
+            color: var(--primary);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
         }
 
-        .math-stats {
-            text-align: center;
-            color: var(--text-muted);
-            margin-bottom: 15px;
-            font-weight: bold;
-        }
+        /* Utilitarios */
+        .text-center { text-align: center; }
+        .subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px; }
 
         @media (max-width: 480px) {
-            .app-container { padding: 20px; }
-            .math-problem { font-size: 2.5rem; }
+            .app-container { padding: 25px 20px; border-radius: 0; min-height: 100vh; border: none; box-shadow: none; }
+            body { padding: 0; background: var(--card-bg); }
+            .math-problem { font-size: 3.2rem; }
         }
     </style>
 </head>
@@ -267,51 +315,67 @@
     <div class="app-container">
         <!-- VISTA PRINCIPAL -->
         <div id="view-main" class="view active">
-            <h1 style="color: #333; margin-bottom: 30px;">App de Estudio Integral</h1>
-            <button class="menu-btn blue-btn" onclick="nav('view-agilidad')">
-                <span class="icon">🧠</span> Agilidad Mental
+            <h1 class="title-gradient">StudyApp</h1>
+            <p class="text-center subtitle">Selecciona tu área de enfoque</p>
+            
+            <button class="menu-btn" onclick="nav('view-agilidad')">
+                <div class="icon-box">🧠</div>
+                <div>Agilidad Mental</div>
             </button>
             <button class="menu-btn" onclick="nav('view-fisiologia')">
-                <span class="icon">🐄</span> Fisiología Animal
+                <div class="icon-box">🧬</div>
+                <div>Fisiología Animal</div>
             </button>
         </div>
 
         <!-- VISTA MENÚ AGILIDAD MENTAL -->
         <div id="view-agilidad" class="view">
-            <button class="back-btn" onclick="nav('view-main')">⬅ Volver al menú principal</button>
-            <h1 class="title-blue">Agilidad Mental</h1>
-            <p style="text-align: center; color: var(--text-muted); margin-bottom: 25px;">Selecciona un modo de entrenamiento</p>
+            <button class="back-btn" onclick="nav('view-main')">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                Menú principal
+            </button>
+            <h1>Agilidad Mental</h1>
+            <p class="text-center subtitle">Modos de entrenamiento</p>
             
-            <button class="menu-btn blue-btn" onclick="startMath('multi')">
-                <span class="icon">✖️</span> Tablas de Multiplicar (0-10)
+            <button class="menu-btn" onclick="startMath('multi')">
+                <div class="icon-box">✖️</div>
+                <div>Tablas de Multiplicar</div>
             </button>
-            <button class="menu-btn blue-btn" onclick="startMath('addsub')">
-                <span class="icon">➕</span> Sumas y Restas
+            <button class="menu-btn" onclick="startMath('addsub')">
+                <div class="icon-box">➕</div>
+                <div>Sumas y Restas rápidas</div>
             </button>
-            <button class="menu-btn blue-btn" onclick="startMath('degrees')">
-                <span class="icon">📐</span> Suma y Resta de Grados
+            <button class="menu-btn" onclick="startMath('degrees')">
+                <div class="icon-box">📐</div>
+                <div>Cálculo de Grados</div>
             </button>
         </div>
 
         <!-- VISTA JUEGO MATEMÁTICAS -->
         <div id="view-math" class="view">
-            <button class="back-btn" onclick="nav('view-agilidad')">⬅ Volver a modos</button>
-            <h1 class="title-blue" id="math-title">Entrenamiento</h1>
+            <button class="back-btn" onclick="nav('view-agilidad')">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                Modos
+            </button>
             
-            <div class="math-stats" id="math-score">Aciertos: 0</div>
+            <div class="text-center">
+                <div class="math-stats" id="math-score">Racha: 0 🔥</div>
+            </div>
             
             <div class="math-problem" id="math-problem">5 x 5</div>
-            <!-- inputmode="numeric" es la clave para que salga el teclado numérico en el móvil -->
             <input type="number" inputmode="numeric" pattern="[0-9]*" class="math-input" id="math-input" placeholder="?" autocomplete="off" />
             
-            <button class="action-btn blue" onclick="checkMath()">Comprobar</button>
+            <button class="action-btn" onclick="checkMath()">Comprobar</button>
             <div class="math-feedback" id="math-feedback"></div>
         </div>
 
         <!-- VISTA FISIOLOGÍA ANIMAL -->
         <div id="view-fisiologia" class="view">
-            <button class="back-btn" onclick="nav('view-main')">⬅ Volver al menú principal</button>
-            <h1>Fisiología Zootécnica</h1>
+            <button class="back-btn" onclick="nav('view-main')">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                Menú principal
+            </button>
+            <h1 style="font-size: 1.4rem; margin-bottom: 20px;">Fisiología Zootécnica</h1>
             
             <div id="fisio-main">
                 <div class="progress-bar">
@@ -319,35 +383,39 @@
                 </div>
                 
                 <div class="stats">
-                    <span id="counter">Término: 1 / 20</span>
+                    <span id="counter">Restantes: 20</span>
                     <span id="score">Aprendidas: 0</span>
                 </div>
 
-                <div class="card">
-                    <div style="font-size: 0.9rem; color: var(--text-muted);">Define el siguiente concepto:</div>
+                <div class="flashcard">
+                    <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Concepto</div>
                     <div class="word-title" id="current-word">Cargando...</div>
                 </div>
 
-                <textarea id="user-input" placeholder="Escribe aquí tu definición o explicación..."></textarea>
+                <textarea id="user-input" placeholder="Redacta tu explicación aquí..."></textarea>
                 
                 <button class="action-btn" id="check-btn" onclick="revisarRespuesta()">Revisar Respuesta</button>
 
                 <div class="feedback-area" id="feedback-area">
-                    <p id="system-feedback" style="font-weight: bold; margin-top: 0;"></p>
-                    <p><strong>Definición correcta:</strong></p>
-                    <p id="correct-definition" style="color: #2e7d32;"></p>
-                    <p style="font-size: 0.9rem; margin-top: 15px; color: var(--text-muted);">¿Tu explicación contenía la idea principal?</p>
+                    <div class="feedback-box">
+                        <p id="system-feedback" style="font-weight: 700; margin-top: 0; font-size: 1.1rem;"></p>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 5px;">Definición oficial:</p>
+                        <p id="correct-definition" style="color: var(--text-main); font-weight: 500; margin-top: 0; line-height: 1.5;"></p>
+                    </div>
+                    
+                    <p style="font-size: 0.9rem; text-align: center; font-weight: 600; color: var(--text-muted); margin-bottom: 12px;">¿Habías captado la idea correctamente?</p>
                     <div class="eval-buttons">
-                        <button class="btn-correct" onclick="marcarResultado(true)">Lo tenía bien</button>
-                        <button class="btn-incorrect" onclick="marcarResultado(false)">Necesito repasarlo</button>
+                        <button class="btn-incorrect" onclick="marcarResultado(false)">Me equivoqué</button>
+                        <button class="btn-correct" onclick="marcarResultado(true)">Lo sabía</button>
                     </div>
                 </div>
             </div>
 
-            <div id="fisio-completed" style="display: none; text-align: center;">
-                <h2>¡Repaso Completado!</h2>
-                <p>Has repasado todos los términos pendientes.</p>
-                <button class="action-btn" onclick="reiniciarEstudio()" style="margin-top: 20px;">Reiniciar todo el mazo</button>
+            <div id="fisio-completed" style="display: none; text-align: center; padding: 40px 0;">
+                <div style="font-size: 4rem; margin-bottom: 20px;">🎉</div>
+                <h2 style="margin-top: 0;">¡Mazo completado!</h2>
+                <p style="color: var(--text-muted); margin-bottom: 30px;">Has repasado con éxito todos los términos de fisiología.</p>
+                <button class="action-btn green" onclick="reiniciarEstudio()">Reiniciar repaso</button>
             </div>
         </div>
     </div>
@@ -355,10 +423,11 @@
     <script>
         // --- NAVEGACIÓN ---
         function nav(viewId) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.view').forEach(v => {
+                v.classList.remove('active');
+            });
             document.getElementById(viewId).classList.add('active');
             
-            // Si entramos a fisiología, inicializar si no se ha hecho
             if(viewId === 'view-fisiologia' && mazo.length === 0) {
                 inicializarFisio();
             }
@@ -369,11 +438,8 @@
         let currentAnswer = 0;
         let mathScore = 0;
 
-        // Escuchar Enter en el input de mates
         document.getElementById('math-input').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                checkMath();
-            }
+            if (e.key === 'Enter') checkMath();
         });
 
         function startMath(mode) {
@@ -381,31 +447,25 @@
             mathScore = 0;
             updateMathScore();
             document.getElementById('math-feedback').innerText = '';
-            
-            const titles = {
-                'multi': 'Tablas de Multiplicar',
-                'addsub': 'Sumas y Restas',
-                'degrees': 'Suma y Resta de Grados'
-            };
-            document.getElementById('math-title').innerText = titles[mode];
-            
             nav('view-math');
             generateMathProblem();
         }
 
         function updateMathScore() {
-            document.getElementById('math-score').innerText = `Aciertos: ${mathScore}`;
+            document.getElementById('math-score').innerText = `Racha: ${mathScore} 🔥`;
         }
 
         function generateMathProblem() {
-            document.getElementById('math-input').value = '';
-            document.getElementById('math-input').focus();
+            const input = document.getElementById('math-input');
+            input.value = '';
+            // Pequeño timeout para asegurar que la vista cargó antes de hacer focus
+            setTimeout(() => input.focus(), 100);
             
             let problemText = '';
             
             if (mathMode === 'multi') {
-                const a = Math.floor(Math.random() * 11); // 0-10
-                const b = Math.floor(Math.random() * 11); // 0-10
+                const a = Math.floor(Math.random() * 11);
+                const b = Math.floor(Math.random() * 11);
                 problemText = `${a} × ${b}`;
                 currentAnswer = a * b;
             } 
@@ -419,15 +479,14 @@
                 } else {
                     let a = Math.floor(Math.random() * 100) + 1;
                     let b = Math.floor(Math.random() * 100) + 1;
-                    if (b > a) { let temp = a; a = b; b = temp; } // Evitar negativos para hacerlo más ágil
+                    if (b > a) { let temp = a; a = b; b = temp; }
                     problemText = `${a} - ${b}`;
                     currentAnswer = a - b;
                 }
             } 
             else if (mathMode === 'degrees') {
-                // Ángulos comunes
                 const angles = [10, 15, 20, 30, 45, 60, 90, 120, 180, 270, 360];
-                const a = angles[Math.floor(Math.random() * angles.length)] + (Math.floor(Math.random() * 3) * 90); // Para dar variedad
+                const a = angles[Math.floor(Math.random() * angles.length)] + (Math.floor(Math.random() * 3) * 90);
                 const b = angles[Math.floor(Math.random() * angles.length)];
                 
                 const isAdd = Math.random() > 0.5;
@@ -435,14 +494,12 @@
                     problemText = `${a}° + ${b}°`;
                     currentAnswer = a + b;
                 } else {
-                    // Evitamos grados negativos complicados, aseguramos a > b
                     let valA = a, valB = b;
                     if (valB > valA) { let temp = valA; valA = valB; valB = temp; }
                     problemText = `${valA}° - ${valB}°`;
                     currentAnswer = valA - valB;
                 }
             }
-
             document.getElementById('math-problem').innerText = problemText;
         }
 
@@ -454,32 +511,33 @@
             const feedback = document.getElementById('math-feedback');
 
             if (userAns === currentAnswer) {
-                feedback.innerText = '¡Correcto! ✔️';
-                feedback.style.color = '#388e3c';
+                feedback.innerText = '¡Perfecto!';
+                feedback.style.color = 'var(--secondary)';
                 mathScore++;
                 updateMathScore();
                 
-                // Cargar la siguiente en medio segundo
                 setTimeout(() => {
                     feedback.innerText = '';
                     generateMathProblem();
-                }, 600);
+                }, 400);
             } else {
-                feedback.innerText = `Incorrecto. Era ${currentAnswer} ❌`;
-                feedback.style.color = '#d32f2f';
-                mathScore = 0; // Reiniciar racha? O solo no sumar. Lo dejamos en no sumar y resetear input
+                feedback.innerText = `Incorrecto. La respuesta es ${currentAnswer}`;
+                feedback.style.color = 'var(--danger)';
+                mathScore = 0; 
                 updateMathScore();
                 
                 setTimeout(() => {
-                    document.getElementById('math-input').value = '';
-                    document.getElementById('math-input').focus();
-                    feedback.innerText = 'Inténtalo de nuevo';
+                    const input = document.getElementById('math-input');
+                    input.value = '';
+                    input.focus();
+                    feedback.innerText = 'Siguiente operación';
                     feedback.style.color = 'var(--text-muted)';
+                    generateMathProblem();
                 }, 1500);
             }
         }
 
-        // --- LÓGICA FISIOLOGÍA (Adaptada de la versión anterior) ---
+        // --- LÓGICA FISIOLOGÍA ---
         const baseDiccionario = [
             { term: "Hiperplasia", def: "Multiplicación o división celular que incrementa el número total de células en un tejido.", kw: ["multiplicación", "división", "número"] },
             { term: "Hipertrofia", def: "Incremento en el tamaño o volumen individual de las células preexistentes.", kw: ["tamaño", "volumen", "preexistentes"] },
@@ -489,18 +547,18 @@
             { term: "Somatocrinina (GHRH)", def: "Hormona liberadora hipotalámica que estimula directamente la síntesis y liberación de la Hormona de Crecimiento (GH).", kw: ["estimula", "liberadora", "hipotálamo"] },
             { term: "Somatostatina (SS/GHIH)", def: "Péptido neuroendocrino hipotalámico que inhibe de forma potente la liberación de GH.", kw: ["inhibe", "péptido", "hipotalámico"] },
             { term: "Grelina", def: "Hormona peptídica secretada por la mucosa gástrica que estimula el apetito y la secreción de somatotropina.", kw: ["gástrica", "apetito", "estómago"] },
-            { term: "IGF-1 (Somatomedina C)", def: "Factor de crecimiento insulínico tipo 1. Sintetizado en el hígado, media la aceleración de la osificación estimulada por la GH.", kw: ["hígado", "osificación", "factor", "insulínico"] },
+            { term: "IGF-1", def: "Factor de crecimiento insulínico tipo 1. Sintetizado en el hígado, media la aceleración de la osificación estimulada por la GH.", kw: ["hígado", "osificación", "factor", "insulínico"] },
             { term: "Vasopresina (ADH)", def: "Hormona antidiurética liberada por la neurohipófisis, responsable de la retención de agua y mantenimiento de la volemia.", kw: ["antidiurética", "agua", "renal", "volemia"] },
             { term: "Colecistoquinina (CCK)", def: "Hormona intestinal liberada por la distensión estomacal que estimula la secreción biliar/pancreática y actúa como señal de saciedad.", kw: ["saciedad", "biliar", "distensión"] },
             { term: "Leptina", def: "Hormona liberada por los adipocitos que actúa en el hipotálamo como señal de plenitud energética inhibiendo la ingesta.", kw: ["adipocitos", "grasa", "plenitud", "inhibiendo"] },
             { term: "Blastocisto", def: "Estadio embrionario inicial compuesto por la masa celular interna (dará origen al embrión) y el trofoblasto.", kw: ["embrionario", "masa", "celular"] },
-            { term: "Trofoblasto", def: "Capa externa del blastocisto que dará origen a los anexos embrionarios: placenta, alantoides y corion.", kw: ["placenta", "corion", "alantoides", "externa"] },
+            { term: "Trofoblasto", def: "Capa externa del blastocisto que dará origen a los anexos embrionarios.", kw: ["placenta", "corion", "alantoides", "externa"] },
             { term: "Onda Basípeta", def: "Segunda onda morfogenética de crecimiento que progresa en sentido disto-proximal, desde las extremidades hacia el tronco.", kw: ["extremidades", "tronco", "disto", "proximal"] },
-            { term: "Crecimiento Compensatorio", def: "Capacidad de un animal de recuperar el retraso ponderal sufrido tras una restricción nutritiva, alcanzando tasas de ganancia de peso superiores a lo normal.", kw: ["recuperar", "restricción", "ganancia", "superiores"] },
-            { term: "Curvas de Hammond", def: "Modelo que describe la jerarquía y el orden cronológico de desarrollo de los tejidos: 1º Nervioso, 2º Óseo, 3º Muscular, 4º Adiposo.", kw: ["jerarquía", "orden", "nervioso", "óseo", "muscular", "adiposo"] },
-            { term: "Precocidad", def: "Capacidad de un animal para completar rápidamente su desarrollo fisiológico, depositando grasa y llegando al peso adulto a edades tempranas.", kw: ["rápidamente", "tempranas", "grasa", "adulto"] },
-            { term: "Grasa Intramuscular (Veteado)", def: "Última grasa en depositarse, localizada dentro de los fascículos musculares. Determina la calidad de la carne.", kw: ["última", "fascículos", "calidad", "jugosidad"] },
-            { term: "Índice de Conversión (IC)", def: "Parámetro que mide la eficiencia nutritiva; indica la cantidad de alimento necesaria para ganar 1 kg de peso vivo.", kw: ["eficiencia", "alimento", "peso"] }
+            { term: "Crecimiento Compensatorio", def: "Capacidad de un animal de recuperar el retraso ponderal sufrido tras una restricción nutritiva.", kw: ["recuperar", "restricción", "ganancia", "superiores"] },
+            { term: "Curvas de Hammond", def: "Modelo que describe el orden cronológico de desarrollo de los tejidos: 1º Nervioso, 2º Óseo, 3º Muscular, 4º Adiposo.", kw: ["jerarquía", "orden", "nervioso", "óseo", "muscular", "adiposo"] },
+            { term: "Precocidad", def: "Capacidad de un animal para completar rápidamente su desarrollo fisiológico, depositando grasa a edades tempranas.", kw: ["rápidamente", "tempranas", "grasa", "adulto"] },
+            { term: "Grasa Intramuscular", def: "Última grasa en depositarse, localizada dentro de los fascículos musculares. Determina la calidad de la carne.", kw: ["última", "fascículos", "calidad", "jugosidad"] },
+            { term: "Índice de Conversión (IC)", def: "Parámetro que mide la eficiencia nutritiva; indica la cantidad de alimento necesaria para ganar 1 kg de peso.", kw: ["eficiencia", "alimento", "peso"] }
         ];
 
         let mazo = [];
@@ -508,7 +566,7 @@
         let aprendidasCount = 0;
 
         function inicializarFisio() {
-            const guardado = localStorage.getItem('fisioZootecniaMazo');
+            const guardado = localStorage.getItem('fisioZootecniaMazoV2');
             if (guardado) {
                 mazo = JSON.parse(guardado);
             } else {
@@ -528,7 +586,7 @@
         }
 
         function guardarProgreso() {
-            localStorage.setItem('fisioZootecniaMazo', JSON.stringify(mazo));
+            localStorage.setItem('fisioZootecniaMazoV2', JSON.stringify(mazo));
         }
 
         function actualizarUI() {
@@ -540,7 +598,7 @@
                 return;
             }
 
-            document.getElementById('counter').innerText = `Pendientes: ${noAprendidas}`;
+            document.getElementById('counter').innerText = `Restantes: ${noAprendidas}`;
             document.getElementById('score').innerText = `Aprendidas: ${aprendidasCount} / ${baseDiccionario.length}`;
             
             const porcentaje = (aprendidasCount / baseDiccionario.length) * 100;
@@ -550,12 +608,16 @@
             document.getElementById('user-input').value = "";
             document.getElementById('feedback-area').style.display = 'none';
             document.getElementById('check-btn').style.display = 'block';
+            
+            setTimeout(() => document.getElementById('user-input').focus(), 100);
         }
 
         function revisarRespuesta() {
             const input = document.getElementById('user-input').value.trim().toLowerCase();
             if (input === "") {
-                alert("Por favor, escribe algo antes de revisar.");
+                const btn = document.getElementById('check-btn');
+                btn.innerText = "¡Escribe algo primero!";
+                setTimeout(() => btn.innerText = "Revisar Respuesta", 1500);
                 return;
             }
 
@@ -567,11 +629,11 @@
 
             const pFeedback = document.getElementById('system-feedback');
             if (hits >= Math.min(2, itemActual.kw.length)) {
-                pFeedback.innerHTML = "¡Parece que captaste la idea principal! 🎯";
-                pFeedback.style.color = "#388e3c";
+                pFeedback.innerText = "¡Buen trabajo! Conceptos clave detectados.";
+                pFeedback.style.color = "var(--secondary)";
             } else {
-                pFeedback.innerHTML = "Faltan algunas palabras o conceptos clave. 👀";
-                pFeedback.style.color = "#d32f2f";
+                pFeedback.innerText = "Faltan algunos matices importantes.";
+                pFeedback.style.color = "var(--danger)";
             }
 
             document.getElementById('correct-definition').innerText = itemActual.def;
@@ -602,7 +664,7 @@
         }
 
         function reiniciarEstudio() {
-            localStorage.removeItem('fisioZootecniaMazo');
+            localStorage.removeItem('fisioZootecniaMazoV2');
             document.getElementById('fisio-completed').style.display = 'none';
             document.getElementById('fisio-main').style.display = 'block';
             inicializarFisio();
