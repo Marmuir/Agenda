@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Repaso: Fisiología del Crecimiento y Desarrollo</title>
+    <title>App de Estudio General</title>
     <style>
         :root {
             --primary-color: #2e7d32;
             --primary-hover: #1b5e20;
+            --blue-color: #1976d2;
+            --blue-hover: #1565c0;
             --bg-color: #f4f6f5;
             --card-bg: #ffffff;
             --text-main: #333333;
@@ -35,6 +37,7 @@
             box-shadow: 0 8px 24px rgba(0,0,0,0.1);
             padding: 30px;
             box-sizing: border-box;
+            position: relative;
         }
 
         h1 {
@@ -43,7 +46,76 @@
             margin-top: 0;
             font-size: 1.5rem;
         }
+        
+        .title-blue {
+            color: var(--blue-color);
+        }
 
+        .view {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .menu-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: white;
+            color: var(--text-main);
+            border: 2px solid var(--border-color);
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            margin-bottom: 15px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .menu-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+        
+        .menu-btn.blue-btn:hover {
+            border-color: var(--blue-color);
+            color: var(--blue-color);
+        }
+
+        .icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 0;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .back-btn:hover {
+            color: var(--text-main);
+        }
+
+        /* Fisiologia Styles */
         .progress-bar {
             width: 100%;
             background-color: var(--border-color);
@@ -103,7 +175,7 @@
             box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.2);
         }
 
-        button {
+        .action-btn {
             background-color: var(--primary-color);
             color: white;
             border: none;
@@ -116,14 +188,9 @@
             transition: background-color 0.2s;
         }
 
-        button:hover {
-            background-color: var(--primary-hover);
-        }
-
-        button:disabled {
-            background-color: #9e9e9e;
-            cursor: not-allowed;
-        }
+        .action-btn:hover { background-color: var(--primary-hover); }
+        .action-btn.blue { background-color: var(--blue-color); }
+        .action-btn.blue:hover { background-color: var(--blue-hover); }
 
         .feedback-area {
             display: none;
@@ -135,90 +202,295 @@
             text-align: left;
         }
 
-        .eval-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
+        .eval-buttons { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-correct { background-color: #388e3c; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; flex: 1; }
+        .btn-incorrect { background-color: #d32f2f; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; flex: 1; }
 
-        .btn-correct {
-            background-color: #388e3c;
-        }
-        .btn-incorrect {
-            background-color: #d32f2f;
-        }
-        .btn-incorrect:hover {
-            background-color: #b71c1c;
-        }
-
-        .completed-state {
+        /* Math Styles */
+        .math-problem {
+            font-size: 3.5rem;
+            font-weight: bold;
             text-align: center;
-            display: none;
+            margin: 20px 0;
+            color: var(--blue-color);
+            letter-spacing: 2px;
+        }
+
+        .math-input {
+            width: 100%;
+            font-size: 2rem;
+            text-align: center;
+            padding: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+            /* Ocultar flechas del input number en webkit */
+            -moz-appearance: textfield;
+        }
+        
+        .math-input::-webkit-outer-spin-button,
+        .math-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .math-input:focus {
+            outline: none;
+            border-color: var(--blue-color);
+            box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+        }
+
+        .math-feedback {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            min-height: 30px;
+            margin-top: 10px;
+        }
+
+        .math-stats {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            font-weight: bold;
         }
 
         @media (max-width: 480px) {
-            .app-container {
-                padding: 20px;
-            }
-            .word-title {
-                font-size: 1.5rem;
-            }
+            .app-container { padding: 20px; }
+            .math-problem { font-size: 2.5rem; }
         }
     </style>
 </head>
 <body>
 
-    <div class="app-container" id="app-main">
-        <h1>Estudio de Fisiología Zootécnica</h1>
-        
-        <div class="progress-bar">
-            <div class="progress-fill" id="progress-fill"></div>
-        </div>
-        
-        <div class="stats">
-            <span id="counter">Término: 1 / 20</span>
-            <span id="score">Aprendidas: 0</span>
-        </div>
-
-        <div class="card">
-            <div style="font-size: 0.9rem; color: var(--text-muted);">Define el siguiente concepto:</div>
-            <div class="word-title" id="current-word">Cargando...</div>
+    <div class="app-container">
+        <!-- VISTA PRINCIPAL -->
+        <div id="view-main" class="view active">
+            <h1 style="color: #333; margin-bottom: 30px;">App de Estudio Integral</h1>
+            <button class="menu-btn blue-btn" onclick="nav('view-agilidad')">
+                <span class="icon">🧠</span> Agilidad Mental
+            </button>
+            <button class="menu-btn" onclick="nav('view-fisiologia')">
+                <span class="icon">🐄</span> Fisiología Animal
+            </button>
         </div>
 
-        <textarea id="user-input" placeholder="Escribe aquí tu definición o explicación..."></textarea>
-        
-        <button id="check-btn" onclick="revisarRespuesta()">Revisar Respuesta</button>
+        <!-- VISTA MENÚ AGILIDAD MENTAL -->
+        <div id="view-agilidad" class="view">
+            <button class="back-btn" onclick="nav('view-main')">⬅ Volver al menú principal</button>
+            <h1 class="title-blue">Agilidad Mental</h1>
+            <p style="text-align: center; color: var(--text-muted); margin-bottom: 25px;">Selecciona un modo de entrenamiento</p>
+            
+            <button class="menu-btn blue-btn" onclick="startMath('multi')">
+                <span class="icon">✖️</span> Tablas de Multiplicar (0-10)
+            </button>
+            <button class="menu-btn blue-btn" onclick="startMath('addsub')">
+                <span class="icon">➕</span> Sumas y Restas
+            </button>
+            <button class="menu-btn blue-btn" onclick="startMath('degrees')">
+                <span class="icon">📐</span> Suma y Resta de Grados
+            </button>
+        </div>
 
-        <div class="feedback-area" id="feedback-area">
-            <p id="system-feedback" style="font-weight: bold; margin-top: 0;"></p>
-            <p><strong>Definición correcta:</strong></p>
-            <p id="correct-definition" style="color: #2e7d32;"></p>
-            <p style="font-size: 0.9rem; margin-top: 15px; color: var(--text-muted);">Sé honesto contigo mismo. ¿Tu explicación contenía la idea principal?</p>
-            <div class="eval-buttons">
-                <button class="btn-correct" onclick="marcarResultado(true)">Lo tenía bien</button>
-                <button class="btn-incorrect" onclick="marcarResultado(false)">Necesito repasarlo</button>
+        <!-- VISTA JUEGO MATEMÁTICAS -->
+        <div id="view-math" class="view">
+            <button class="back-btn" onclick="nav('view-agilidad')">⬅ Volver a modos</button>
+            <h1 class="title-blue" id="math-title">Entrenamiento</h1>
+            
+            <div class="math-stats" id="math-score">Aciertos: 0</div>
+            
+            <div class="math-problem" id="math-problem">5 x 5</div>
+            <!-- inputmode="numeric" es la clave para que salga el teclado numérico en el móvil -->
+            <input type="number" inputmode="numeric" pattern="[0-9]*" class="math-input" id="math-input" placeholder="?" autocomplete="off" />
+            
+            <button class="action-btn blue" onclick="checkMath()">Comprobar</button>
+            <div class="math-feedback" id="math-feedback"></div>
+        </div>
+
+        <!-- VISTA FISIOLOGÍA ANIMAL -->
+        <div id="view-fisiologia" class="view">
+            <button class="back-btn" onclick="nav('view-main')">⬅ Volver al menú principal</button>
+            <h1>Fisiología Zootécnica</h1>
+            
+            <div id="fisio-main">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                
+                <div class="stats">
+                    <span id="counter">Término: 1 / 20</span>
+                    <span id="score">Aprendidas: 0</span>
+                </div>
+
+                <div class="card">
+                    <div style="font-size: 0.9rem; color: var(--text-muted);">Define el siguiente concepto:</div>
+                    <div class="word-title" id="current-word">Cargando...</div>
+                </div>
+
+                <textarea id="user-input" placeholder="Escribe aquí tu definición o explicación..."></textarea>
+                
+                <button class="action-btn" id="check-btn" onclick="revisarRespuesta()">Revisar Respuesta</button>
+
+                <div class="feedback-area" id="feedback-area">
+                    <p id="system-feedback" style="font-weight: bold; margin-top: 0;"></p>
+                    <p><strong>Definición correcta:</strong></p>
+                    <p id="correct-definition" style="color: #2e7d32;"></p>
+                    <p style="font-size: 0.9rem; margin-top: 15px; color: var(--text-muted);">¿Tu explicación contenía la idea principal?</p>
+                    <div class="eval-buttons">
+                        <button class="btn-correct" onclick="marcarResultado(true)">Lo tenía bien</button>
+                        <button class="btn-incorrect" onclick="marcarResultado(false)">Necesito repasarlo</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="fisio-completed" style="display: none; text-align: center;">
+                <h2>¡Repaso Completado!</h2>
+                <p>Has repasado todos los términos pendientes.</p>
+                <button class="action-btn" onclick="reiniciarEstudio()" style="margin-top: 20px;">Reiniciar todo el mazo</button>
             </div>
         </div>
     </div>
 
-    <div class="app-container completed-state" id="app-completed">
-        <h1>¡Repaso Completado!</h1>
-        <p>Has repasado todos los términos pendientes.</p>
-        <button onclick="reiniciarEstudio()" style="margin-top: 20px;">Reiniciar todo el mazo</button>
-    </div>
-
     <script>
+        // --- NAVEGACIÓN ---
+        function nav(viewId) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            
+            // Si entramos a fisiología, inicializar si no se ha hecho
+            if(viewId === 'view-fisiologia' && mazo.length === 0) {
+                inicializarFisio();
+            }
+        }
+
+        // --- LÓGICA AGILIDAD MENTAL ---
+        let mathMode = '';
+        let currentAnswer = 0;
+        let mathScore = 0;
+
+        // Escuchar Enter en el input de mates
+        document.getElementById('math-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                checkMath();
+            }
+        });
+
+        function startMath(mode) {
+            mathMode = mode;
+            mathScore = 0;
+            updateMathScore();
+            document.getElementById('math-feedback').innerText = '';
+            
+            const titles = {
+                'multi': 'Tablas de Multiplicar',
+                'addsub': 'Sumas y Restas',
+                'degrees': 'Suma y Resta de Grados'
+            };
+            document.getElementById('math-title').innerText = titles[mode];
+            
+            nav('view-math');
+            generateMathProblem();
+        }
+
+        function updateMathScore() {
+            document.getElementById('math-score').innerText = `Aciertos: ${mathScore}`;
+        }
+
+        function generateMathProblem() {
+            document.getElementById('math-input').value = '';
+            document.getElementById('math-input').focus();
+            
+            let problemText = '';
+            
+            if (mathMode === 'multi') {
+                const a = Math.floor(Math.random() * 11); // 0-10
+                const b = Math.floor(Math.random() * 11); // 0-10
+                problemText = `${a} × ${b}`;
+                currentAnswer = a * b;
+            } 
+            else if (mathMode === 'addsub') {
+                const isAdd = Math.random() > 0.5;
+                if (isAdd) {
+                    const a = Math.floor(Math.random() * 100) + 1;
+                    const b = Math.floor(Math.random() * 100) + 1;
+                    problemText = `${a} + ${b}`;
+                    currentAnswer = a + b;
+                } else {
+                    let a = Math.floor(Math.random() * 100) + 1;
+                    let b = Math.floor(Math.random() * 100) + 1;
+                    if (b > a) { let temp = a; a = b; b = temp; } // Evitar negativos para hacerlo más ágil
+                    problemText = `${a} - ${b}`;
+                    currentAnswer = a - b;
+                }
+            } 
+            else if (mathMode === 'degrees') {
+                // Ángulos comunes
+                const angles = [10, 15, 20, 30, 45, 60, 90, 120, 180, 270, 360];
+                const a = angles[Math.floor(Math.random() * angles.length)] + (Math.floor(Math.random() * 3) * 90); // Para dar variedad
+                const b = angles[Math.floor(Math.random() * angles.length)];
+                
+                const isAdd = Math.random() > 0.5;
+                if (isAdd) {
+                    problemText = `${a}° + ${b}°`;
+                    currentAnswer = a + b;
+                } else {
+                    // Evitamos grados negativos complicados, aseguramos a > b
+                    let valA = a, valB = b;
+                    if (valB > valA) { let temp = valA; valA = valB; valB = temp; }
+                    problemText = `${valA}° - ${valB}°`;
+                    currentAnswer = valA - valB;
+                }
+            }
+
+            document.getElementById('math-problem').innerText = problemText;
+        }
+
+        function checkMath() {
+            const inputVal = document.getElementById('math-input').value;
+            if (inputVal === '') return;
+
+            const userAns = parseInt(inputVal, 10);
+            const feedback = document.getElementById('math-feedback');
+
+            if (userAns === currentAnswer) {
+                feedback.innerText = '¡Correcto! ✔️';
+                feedback.style.color = '#388e3c';
+                mathScore++;
+                updateMathScore();
+                
+                // Cargar la siguiente en medio segundo
+                setTimeout(() => {
+                    feedback.innerText = '';
+                    generateMathProblem();
+                }, 600);
+            } else {
+                feedback.innerText = `Incorrecto. Era ${currentAnswer} ❌`;
+                feedback.style.color = '#d32f2f';
+                mathScore = 0; // Reiniciar racha? O solo no sumar. Lo dejamos en no sumar y resetear input
+                updateMathScore();
+                
+                setTimeout(() => {
+                    document.getElementById('math-input').value = '';
+                    document.getElementById('math-input').focus();
+                    feedback.innerText = 'Inténtalo de nuevo';
+                    feedback.style.color = 'var(--text-muted)';
+                }, 1500);
+            }
+        }
+
+        // --- LÓGICA FISIOLOGÍA (Adaptada de la versión anterior) ---
         const baseDiccionario = [
-            { term: "Hiperplasia", def: "Multiplicación o división celular que incrementa el número total de células en un tejido. Predomina en la etapa embrionaria y fetal temprana.", kw: ["multiplicación", "división", "número"] },
-            { term: "Hipertrofia", def: "Incremento en el tamaño o volumen individual de las células preexistentes por acumulación citoplasmática y proteica.", kw: ["tamaño", "volumen", "preexistentes"] },
+            { term: "Hiperplasia", def: "Multiplicación o división celular que incrementa el número total de células en un tejido.", kw: ["multiplicación", "división", "número"] },
+            { term: "Hipertrofia", def: "Incremento en el tamaño o volumen individual de las células preexistentes.", kw: ["tamaño", "volumen", "preexistentes"] },
             { term: "Morfogénesis", def: "Formación, ensamblaje y modelado funcional de los órganos y sistemas integrados del cuerpo.", kw: ["formación", "modelado", "órganos", "sistemas"] },
-            { term: "Alometría", def: "Fenómeno por el cual distintas partes corporales, órganos y tejidos no crecen al mismo ritmo ni de forma sincrónica (crecimiento relativo).", kw: ["ritmo", "sincrónica", "relativo", "distintas"] },
+            { term: "Alometría", def: "Fenómeno por el cual distintas partes corporales, órganos y tejidos no crecen al mismo ritmo (crecimiento relativo).", kw: ["ritmo", "sincrónica", "relativo", "distintas"] },
             { term: "Somatotropina (GH)", def: "Hormona secretada por la adenohipófisis con patrón pulsátil; estimula el crecimiento longitudinal óseo y la síntesis de proteínas musculares.", kw: ["hormona", "adenohipófisis", "hueso", "músculo", "crecimiento"] },
             { term: "Somatocrinina (GHRH)", def: "Hormona liberadora hipotalámica que estimula directamente la síntesis y liberación de la Hormona de Crecimiento (GH).", kw: ["estimula", "liberadora", "hipotálamo"] },
             { term: "Somatostatina (SS/GHIH)", def: "Péptido neuroendocrino hipotalámico que inhibe de forma potente la liberación de GH.", kw: ["inhibe", "péptido", "hipotalámico"] },
             { term: "Grelina", def: "Hormona peptídica secretada por la mucosa gástrica que estimula el apetito y la secreción de somatotropina.", kw: ["gástrica", "apetito", "estómago"] },
             { term: "IGF-1 (Somatomedina C)", def: "Factor de crecimiento insulínico tipo 1. Sintetizado en el hígado, media la aceleración de la osificación estimulada por la GH.", kw: ["hígado", "osificación", "factor", "insulínico"] },
-            { term: "Vasopresina (ADH)", def: "Hormona antidiurética liberada por la neurohipófisis, responsable de la retención de agua en el túbulo colector renal y mantenimiento de la volemia.", kw: ["antidiurética", "agua", "renal", "volemia"] },
+            { term: "Vasopresina (ADH)", def: "Hormona antidiurética liberada por la neurohipófisis, responsable de la retención de agua y mantenimiento de la volemia.", kw: ["antidiurética", "agua", "renal", "volemia"] },
             { term: "Colecistoquinina (CCK)", def: "Hormona intestinal liberada por la distensión estomacal que estimula la secreción biliar/pancreática y actúa como señal de saciedad.", kw: ["saciedad", "biliar", "distensión"] },
             { term: "Leptina", def: "Hormona liberada por los adipocitos que actúa en el hipotálamo como señal de plenitud energética inhibiendo la ingesta.", kw: ["adipocitos", "grasa", "plenitud", "inhibiendo"] },
             { term: "Blastocisto", def: "Estadio embrionario inicial compuesto por la masa celular interna (dará origen al embrión) y el trofoblasto.", kw: ["embrionario", "masa", "celular"] },
@@ -227,7 +499,7 @@
             { term: "Crecimiento Compensatorio", def: "Capacidad de un animal de recuperar el retraso ponderal sufrido tras una restricción nutritiva, alcanzando tasas de ganancia de peso superiores a lo normal.", kw: ["recuperar", "restricción", "ganancia", "superiores"] },
             { term: "Curvas de Hammond", def: "Modelo que describe la jerarquía y el orden cronológico de desarrollo de los tejidos: 1º Nervioso, 2º Óseo, 3º Muscular, 4º Adiposo.", kw: ["jerarquía", "orden", "nervioso", "óseo", "muscular", "adiposo"] },
             { term: "Precocidad", def: "Capacidad de un animal para completar rápidamente su desarrollo fisiológico, depositando grasa y llegando al peso adulto a edades tempranas.", kw: ["rápidamente", "tempranas", "grasa", "adulto"] },
-            { term: "Grasa Intramuscular (Veteado)", def: "Última grasa en depositarse, localizada dentro de los fascículos musculares. Determina la calidad, jugosidad y palatabilidad de la carne.", kw: ["última", "fascículos", "calidad", "jugosidad"] },
+            { term: "Grasa Intramuscular (Veteado)", def: "Última grasa en depositarse, localizada dentro de los fascículos musculares. Determina la calidad de la carne.", kw: ["última", "fascículos", "calidad", "jugosidad"] },
             { term: "Índice de Conversión (IC)", def: "Parámetro que mide la eficiencia nutritiva; indica la cantidad de alimento necesaria para ganar 1 kg de peso vivo.", kw: ["eficiencia", "alimento", "peso"] }
         ];
 
@@ -235,25 +507,21 @@
         let indexActual = 0;
         let aprendidasCount = 0;
 
-        function inicializar() {
-            // Intentar cargar progreso usando LocalStorage para guardar las sesiones
+        function inicializarFisio() {
             const guardado = localStorage.getItem('fisioZootecniaMazo');
             if (guardado) {
                 mazo = JSON.parse(guardado);
             } else {
-                // Mezclar array original
                 mazo = baseDiccionario.map(item => ({ ...item, aprendida: false }));
                 mazo.sort(() => Math.random() - 0.5);
                 guardarProgreso();
             }
 
-            // Filtrar solo las no aprendidas para esta sesión
             if (mazo.every(item => item.aprendida)) {
                 mostrarPantallaFinal();
                 return;
             }
 
-            // Mover las no aprendidas al principio
             mazo.sort((a, b) => (a.aprendida === b.aprendida)? 0 : a.aprendida? 1 : -1);
             indexActual = 0;
             actualizarUI();
@@ -298,17 +566,15 @@
             });
 
             const pFeedback = document.getElementById('system-feedback');
-            // Verificación inteligente y flexible
             if (hits >= Math.min(2, itemActual.kw.length)) {
-                pFeedback.innerHTML = "¡Parece que captaste la idea principal! <span style='font-size:1.2rem'>🎯</span>";
+                pFeedback.innerHTML = "¡Parece que captaste la idea principal! 🎯";
                 pFeedback.style.color = "#388e3c";
             } else {
-                pFeedback.innerHTML = "Faltan algunas palabras o conceptos clave. <span style='font-size:1.2rem'>👀</span>";
+                pFeedback.innerHTML = "Faltan algunas palabras o conceptos clave. 👀";
                 pFeedback.style.color = "#d32f2f";
             }
 
             document.getElementById('correct-definition').innerText = itemActual.def;
-            
             document.getElementById('check-btn').style.display = 'none';
             document.getElementById('feedback-area').style.display = 'block';
         }
@@ -317,38 +583,30 @@
             if (loSabia) {
                 mazo[indexActual].aprendida = true;
             } else {
-                // Si no lo sabía, lo mandamos al final del mazo para repasarlo luego
                 const item = mazo.splice(indexActual, 1)[0];
                 mazo.push(item);
-                indexActual--; // Ajustamos el índice porque el array se contrajo
+                indexActual--; 
             }
-            
             guardarProgreso();
             indexActual++;
             
-            // Si nos pasamos del número de no aprendidas, volvemos a empezar la ronda
             const noAprendidas = mazo.filter(i => !i.aprendida).length;
-            if (indexActual >= noAprendidas) {
-                indexActual = 0;
-            }
+            if (indexActual >= noAprendidas) indexActual = 0;
 
             actualizarUI();
         }
 
         function mostrarPantallaFinal() {
-            document.getElementById('app-main').style.display = 'none';
-            document.getElementById('app-completed').style.display = 'block';
+            document.getElementById('fisio-main').style.display = 'none';
+            document.getElementById('fisio-completed').style.display = 'block';
         }
 
         function reiniciarEstudio() {
             localStorage.removeItem('fisioZootecniaMazo');
-            document.getElementById('app-completed').style.display = 'none';
-            document.getElementById('app-main').style.display = 'block';
-            inicializar();
+            document.getElementById('fisio-completed').style.display = 'none';
+            document.getElementById('fisio-main').style.display = 'block';
+            inicializarFisio();
         }
-
-        // Iniciar
-        inicializar();
     </script>
 </body>
 </html>
